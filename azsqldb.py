@@ -91,3 +91,11 @@ def create_new_user(sqlcursor, username, password, email, school, role):
 
     return "User successfully created!"
 
+def get_classes(user_id, role, sqlcursor):
+    # Check if the user is a teacher or student
+    if role == 'teacher':
+        sqlcursor.execute("SELECT class_name FROM master.STUDYBUDDY.classes WHERE teacher_id = ?", (user_id,))
+        class_records = sqlcursor.fetchall()
+        class_names = [record[0] for record in class_records]
+        return class_names
+

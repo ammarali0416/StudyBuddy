@@ -15,7 +15,7 @@ st.title("Welcome (Teacher) to your Home Page")
 st.sidebar.title("Manage Classes")
 
 # Add Class button with a plus sign
-with st.sidebar.form("add_class_form"):
+with st.form("add_class_form"):
     new_class = st.text_input("Enter Class Name")
     add_button = st.form_submit_button("Add Class (+)")
 
