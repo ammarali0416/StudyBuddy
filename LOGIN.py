@@ -59,6 +59,17 @@ def login():
         else:
             st.error(message)
 
+
+def choose_class():
+    class_list = azsqldb.get_classes(st.session_state.user_id, st.session_state.role, st.session_state.sqlcursor)
+    # Determine what title to show based on the role
+    if st.session_state.role == 'teacher':
+        selected_action = st.selectbox("Select an action:", ["Add Class", "Select Class"])
+        if selected_action == 'Select Class':
+            selected_class = st.selectbox("Classes:", class_list)
+    else:
+        selected_action = st.selectbox("Select class:", class_list)
+
 # Main application
 st.set_page_config(page_title="Study Buddy",
                    initial_sidebar_state="auto")
@@ -70,3 +81,7 @@ if selected_action == "Sign Up":
     signup()
 elif selected_action == "Log In":
     login()
+
+# check if the user is logged in
+if st.session_state.user_id:
+    choose_class()
