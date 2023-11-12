@@ -1,4 +1,7 @@
 import streamlit as st
+import azsqldb
+
+class_list = azsqldb.get_classes(st.session_state.user_id, st.session_state.role, st.session_state.sqlcursor)
 
 st.title("Dashboard")
 
@@ -8,6 +11,8 @@ if st.session_state.user_id == None:
 else:
     # Determine what title to show based on the role
     if st.session_state.role == 'teacher':
-        st.subheader("Get ready to be empowered!")
+        selected_action = st.selectbox("Select an action:", ["Add Class", "Select Class"])
+        if selected_action == 'Select Class':
+            selected_class = st.selectbox("Classes:", class_list)
     else:
-        st.subheader("Get ready to learn!")
+        selected_action = st.selectbox("Select class:", class_list)
