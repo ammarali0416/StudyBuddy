@@ -13,6 +13,8 @@
 import os
 from dotenv import load_dotenv
 import pyodbc
+import random
+
 
 def connect_to_azure_sql():
     # Get the path to the directory where the entry point (main.py) is located
@@ -92,10 +94,49 @@ def create_new_user(sqlcursor, username, password, email, school, role):
     return "User successfully created!"
 
 def get_classes(user_id, role, sqlcursor):
-    # Check if the user is a teacher or student
+    """
+    Get all the classes associated with a particular user
+    Returns a dictionary mapping class names to their full information
+    """
+    # Check if the role is 'teacher'
     if role == 'teacher':
-        sqlcursor.execute("SELECT class_name FROM master.STUDYBUDDY.classes WHERE teacher_id = ?", (user_id,))
+        # Execute a SQL query to get the class details where the teacher_id matches the user_id
+        sqlcursor.execute("SELECT class_id, class_name, class_code FROM master.STUDYBUDDY.classes WHERE teacher_id = ?", (user_id,))
+        # Fetch all the records returned by the query
         class_records = sqlcursor.fetchall()
-        class_names = [record[0] for record in class_records]
-        return class_names
 
+        # Create a dictionary where the keys are class names and the values are dictionaries containing full class information
+        class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2]} for record in class_records}
+
+        # Return the dictionary mapping class names to their full information
+        return class_info_mapping
+       
+"""Example usage of get_classes() function:
+#classes = get_classes(4, 'teacher', connect_to_azure_sql())
+# outputs a dictionary like this:
+# {"Anam's Class": 
+    {'class_id': 1,
+     'class_name': "Anam's Class",
+     'class_code': 'abc123'}, 
+   "DANESH'S CLASS": 
+    {'class_id': 2, 
+     'class_name': "DANESH'S CLASS", 
+     'class_code': '555FFF'}
+  }
+# classes["Anam's Class"]['class_id'] would return 1]"""
+
+def new_class(user_id, sqlcursor, class_name):
+    """
+    Create a new class
+    Returns the class code
+    """
+    # Generate a random class code
+    class_code = ''.join(random.choices('0123456789ABCDEF', k=6))
+
+    # Execute a SQL query to insert the new class
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id) VALUES (?, ?, ?)", (class_name, class_code, user_id))
+    # Commit the transaction
+    sqlcursor.connection.commit()
+
+    # Return the class code
+    return class_code

@@ -12,13 +12,15 @@
 import azsqldb
 import streamlit as st
 
-# Store the user id
-if "user_id" not in st.session_state:
-    st.session_state.user_id = None
+# Set the page title and the initial state of the sidebar
+st.set_page_config(page_title="Study Buddy",
+                   initial_sidebar_state="auto")
 
-# Store the user role
-if "role" not in st.session_state:
-    st.session_state.role = None
+# Store the user information in a dictionary
+if "user_info" not in st.session_state:
+    st.session_state.user_info = {'user_id': None,
+                 'role': None,
+                 'username': None}
 
 # Create a cursor object
 if "sqlcursor" not in st.session_state:
@@ -52,36 +54,28 @@ def login():
         is_authenticated, message, role, user_id = azsqldb.authenticate_user(st.session_state.sqlcursor, username, password)
         
         if is_authenticated:
-            st.session_state.user_id = user_id   # Store the user_id in session_state
-            st.session_state.role = role # Store the role to determine what gets shown on the other pages
-            st.success(f"Welcome, {username}! \n Your dashboard is now available!")
-            
+            user_info = {'user_id': user_id,
+                         'role': role,
+                         'username': username}
+            st.session_state.user_info = user_info
         else:
             st.error(message)
 
 
-def choose_class():
-    class_list = azsqldb.get_classes(st.session_state.user_id, st.session_state.role, st.session_state.sqlcursor)
-    # Determine what title to show based on the role
-    if st.session_state.role == 'teacher':
-        selected_action = st.selectbox("Select an action:", ["Add Class", "Select Class"])
-        if selected_action == 'Select Class':
-            selected_class = st.selectbox("Classes:", class_list)
-    else:
-        selected_action = st.selectbox("Select class:", class_list)
 
-# Main application
-st.set_page_config(page_title="Study Buddy",
-                   initial_sidebar_state="auto")
+def main():
+    # Main application
+    # Create a dropdown to select action (Sign Up or Log In)
+    selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"])
 
-# Create a dropdown to select action (Sign Up or Log In)
-selected_action = st.selectbox("Select an action:", ["Sign Up", "Log In"])
+    if selected_action == "Sign Up":
+        signup()
+    elif selected_action == "Log In":
+        login()
 
-if selected_action == "Sign Up":
-    signup()
-elif selected_action == "Log In":
-    login()
+    # check if the user is logged in and if so display this at the bottom of the screeon
+    if st.session_state.user_info['user_id'] != None:
+        st.success(f"Welcome, {st.session_state.user_info['username']}! \n Your dashboard is now available!")
 
-# check if the user is logged in
-if st.session_state.user_id:
-    choose_class()
+if __name__ == "__main__":
+    main()
