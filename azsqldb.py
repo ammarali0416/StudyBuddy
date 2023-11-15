@@ -100,15 +100,26 @@ def get_classes(user_id, role, sqlcursor):
     """
     # Check if the role is 'teacher'
     if role == 'teacher':
-        # Execute a SQL query to get the class details where the teacher_id matches the user_id
-        sqlcursor.execute("SELECT class_id, class_name, class_code FROM master.STUDYBUDDY.classes WHERE teacher_id = ?", (user_id,))
-        # Fetch all the records returned by the query
+        sqlcursor.execute("""
+            SELECT class_id, class_name, class_code 
+            FROM master.STUDYBUDDY.Classes 
+            WHERE teacher_id = ?
+        """, (user_id,))
+        class_records = sqlcursor.fetchall()
+        # Create a dictionary mapping class names to their full information
+        class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2]} for record in class_records}
+        return class_info_mapping
+    else:  # Assuming the only other role is 'student'
+        sqlcursor.execute("""
+            SELECT c.class_id, c.class_name, c.class_code 
+            FROM master.STUDYBUDDY.Classes c 
+            INNER JOIN master.STUDYBUDDY.StudentClass sc 
+            ON c.class_id = sc.class_id 
+            WHERE sc.user_id = ?
+        """, (user_id,))
         class_records = sqlcursor.fetchall()
 
-        # Create a dictionary where the keys are class names and the values are dictionaries containing full class information
         class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2]} for record in class_records}
-
-        # Return the dictionary mapping class names to their full information
         return class_info_mapping
        
 """Example usage of get_classes() function:
@@ -128,7 +139,6 @@ def get_classes(user_id, role, sqlcursor):
 def new_class(user_id, sqlcursor, class_name):
     """
     Create a new class
-    Returns the class code
     """
     # Generate a random class code
     class_code = ''.join(random.choices('0123456789ABCDEF', k=6))
@@ -138,5 +148,32 @@ def new_class(user_id, sqlcursor, class_name):
     # Commit the transaction
     sqlcursor.connection.commit()
 
-    # Return the class code
-    return class_code
+def join_class(user_id, sqlcursor, class_code):
+    """
+    Join a class using the class code.
+    """
+    # Execute a SQL query to get the class details where the class_code matches the provided class_code
+    sqlcursor.execute("SELECT class_id FROM master.STUDYBUDDY.Classes WHERE class_code = ?", (class_code,))
+    # Fetch the record returned by the query
+    class_record = sqlcursor.fetchone()
+
+    if not class_record:
+        # No class was found with the provided class_code
+        return "No class was found with the provided class code. Please check the code and try again."
+
+    class_id = class_record[0]
+
+    # Check if the user is already in the class
+    sqlcursor.execute("SELECT * FROM master.STUDYBUDDY.StudentClass WHERE user_id = ? AND class_id = ?", (user_id, class_id))
+    class_member_record = sqlcursor.fetchone()
+
+    if class_member_record:
+        # The user is already in the class
+        return "You are already in this class."
+
+    # Execute a SQL query to insert the new class member into the StudentClass table
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.StudentClass (user_id, class_id) VALUES (?, ?)", (user_id, class_id))
+    # Commit the transaction
+    sqlcursor.connection.commit()
+
+    return "You have successfully joined the class!"
