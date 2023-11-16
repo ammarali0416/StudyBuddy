@@ -99,8 +99,19 @@ def student_sidebar():
                     st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
                     st.experimental_rerun()  # Rerun the script to reflect the changes
 
+def teacher_faqs(class_id, sqlcursor):
+    # Fetch FAQs for the given class
+    faq_data = azsqldb.get_questions(class_id, sqlcursor)
 
-
+    if faq_data:
+        # Display each question and its answer in a table format
+        for faq_id, faq_info in faq_data.items():
+            st.text("Question: " + faq_info['question'])
+            st.text("Answer: " + (faq_info['answer'] if faq_info['answer'] else "No answer yet"))
+            st.text("Asked by User ID: " + str(faq_info['user_id']))
+            st.write("---")  # A line to separate each FAQ
+    else:
+        st.write("No FAQs available for this class.")
 
 def main():
     # Check if the user is logged in or not
@@ -117,6 +128,10 @@ def main():
     - **Schedule**: Use this to view and manage the class schedule. 🗓️
     - **Upload Files**: Upload class materials, assignments, and other resources. 📚
     """)
+            # Button to view FAQs
+            if st.button("FAQs"):
+                teacher_faqs(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
+        
         else:
             student_sidebar()
             st.write("""

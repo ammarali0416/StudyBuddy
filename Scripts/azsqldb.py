@@ -14,13 +14,14 @@ import os
 from dotenv import load_dotenv
 import pyodbc
 import random
+import streamlit as st
 
 
 def connect_to_azure_sql():
-    # Get the path to the directory where the entry point (main.py) is located
-    BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    # Get the path to the directory one level up from where this script is located
+    BASEDIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
-    # Load the variables from the .env file
+    # Load the variables from the .env file located at the topmost level
     load_dotenv(os.path.join(BASEDIR, '.env'))
 
     # Retrieve the connection string variables
@@ -39,10 +40,11 @@ def connect_to_azure_sql():
         return conn.cursor()
     except pyodbc.Error as e:
         if 'IM002' in str(e):
-            print("ERROR: The ODBC driver for SQL Server is not installed or configured correctly.")
-            print("Please download and install the driver from this link: https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server")
+            st.warning("ERROR: The ODBC driver for SQL Server is not installed or configured correctly. \
+                        Please download and install the driver from this link: \
+                        https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server")
         else:
-            print("An error occurred while connecting to the database:", e)
+            st.warning(f"An error occurred while connecting to the database: {e}")
         return None
 
 
@@ -177,3 +179,52 @@ def join_class(user_id, sqlcursor, class_code):
     sqlcursor.connection.commit()
 
     return "You have successfully joined the class!"
+
+def ask_question(class_id, user_id, question, sqlcursor):
+    """
+    Add a new question to the Questions table
+    add_question(
+        st.session_state.class_info['class_id'],
+        st.session_state.user_info['user_id'],
+        some_question_variable,
+        st.session_state.sqlcursor
+    )
+    """
+    # Execute a SQL query to insert the new question
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.FAQs (class_id, user_id, question) VALUES (?, ?, ?)", (class_id, user_id, question))
+    # Commit the transaction
+    sqlcursor.connection.commit()
+
+def get_questions(class_id, sqlcursor):
+    """
+    Get all the questions and answers for a particular class
+    use this to populate the FAQs
+    get_questions(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
+    """
+    # Execute a SQL query to get all the questions for the provided class_id
+    sqlcursor.execute("SELECT class_id, user_id, question, answer, faq_id FROM master.STUDYBUDDY.FAQs WHERE class_id = ?", (class_id,))
+    # Fetch all the records returned by the query
+    question_records = sqlcursor.fetchall()
+
+    # Create a dictionary mapping question_ids to their full information
+    question_info_mapping = {record[0]: {'class_id': record[0],
+                                         'user_id': record[1],
+                                         'question': record[2],
+                                         'answer':record[3],
+                                         'faq_id':record[4]} for record in question_records}
+
+    return question_info_mapping
+
+def add_faq(user_id, class_id, question, answer, sqlcursor):
+    """
+    Add a new FAQ to the FAQs table. For teachers only.
+    add_faq(st.session_state.user_info['user_id'], 
+            st.session_state.class_info['class_id'], 
+            some_question_variable, 
+            some_answer_variable, 
+            st.session_state.sqlcursor)
+    """
+    # Execute a SQL query to insert the new FAQ
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.FAQs (user_id, class_id, question, answer) VALUES (?, ?, ?, ?)", (user_id, class_id, question, answer))
+    # Commit the transaction
+    sqlcursor.connection.commit()
