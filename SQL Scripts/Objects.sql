@@ -24,3 +24,13 @@ CREATE TABLE master.STUDYBUDDY.StudentClass (
     CONSTRAINT FK_StudentClass_User FOREIGN KEY (user_id) REFERENCES STUDYBUDDY.Users(user_id),
     CONSTRAINT FK_StudentClass_Class FOREIGN KEY (class_id) REFERENCES master.STUDYBUDDY.Classes(class_id)
 );
+
+CREATE TABLE STUDYBUDDY.FAQs (
+    faq_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+    question NVARCHAR(1000) NOT NULL,
+    answer NVARCHAR(1000),
+    class_id INT NOT NULL,
+    user_id INT NOT NULL,
+    CONSTRAINT FK_FAQs_Class FOREIGN KEY (class_id) REFERENCES master.STUDYBUDDY.Classes(class_id),
+    CONSTRAINT FK_FAQs_User FOREIGN KEY (user_id) REFERENCES STUDYBUDDY.Users(user_id)
+);
