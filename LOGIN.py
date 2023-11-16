@@ -9,7 +9,7 @@
 #    Updated: 2023/11/05 20:20:07 by ammar syed       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-import azsqldb
+from Scripts import azsqldb
 import streamlit as st
 
 # Set the page title and the initial state of the sidebar
