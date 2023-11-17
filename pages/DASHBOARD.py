@@ -30,6 +30,10 @@ if 'show_faqs' not in st.session_state:
 # Initialize a session state variable for FAQ updates
 if 'update_faqs' not in st.session_state:
     st.session_state.update_faqs = True
+# Initialize a show_file_upload
+if 'show_file_upload' not in st.session_state:
+    st.session_state.show_file_upload = False
+
 
 
 def fetch_class_data():
@@ -136,6 +140,10 @@ def teacher_faqs(class_id, sqlcursor):
             # Refresh FAQs after adding new FAQ
             st.experimental_rerun()
 
+# file upload function
+def file_upload():
+    uploaded_files = st.file_uploader(f"Upload Files for {st.session_state.class_info['class_name']}", accept_multiple_files=True)
+
 
 def main():
     # Check if the user is logged in or not
@@ -157,9 +165,21 @@ def main():
                 st.session_state.show_faqs = not st.session_state.show_faqs  # Toggle the show_faqs state
 
             if st.session_state.show_faqs:
+                # make sure the file button doesn't show
+                st.session_state.show_file_upload = False
+                # set the show file upload button to false
                 teacher_faqs(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
+
+            # Button to toggle File uploads (repeat in the student)
+            if st.button("File Upload"):
+                st.session_state.show_file_upload = not st.session_state.show_file_upload
+
+            if st.session_state.show_file_upload:
+                st.session_state.show_faqs = False
+                file_upload()
+
         
-        else:
+        else: #student block
             student_sidebar()
             st.write("""
                 Here's a quick guide to the buttons you'll find on this page: 
