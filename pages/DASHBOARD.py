@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from Scripts import azsqldb
 
 # Initialize the user information
@@ -23,6 +24,13 @@ if 'show_new_class_input' not in st.session_state:
 # Store the join class input field state (student)
 if 'show_join_class_input' not in st.session_state:
     st.session_state.show_join_class_input = False
+# Initialize the FAQ toggle state in session_state if it doesn't exist
+if 'show_faqs' not in st.session_state:
+    st.session_state.show_faqs = False
+# Initialize a session state variable for FAQ updates
+if 'update_faqs' not in st.session_state:
+    st.session_state.update_faqs = True
+
 
 def fetch_class_data():
     return azsqldb.get_classes(st.session_state.user_info['user_id'],
@@ -99,19 +107,35 @@ def student_sidebar():
                     st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
                     st.experimental_rerun()  # Rerun the script to reflect the changes
 
-def teacher_faqs(class_id, sqlcursor):
-    # Fetch FAQs for the given class
-    faq_data = azsqldb.get_questions(class_id, sqlcursor)
-
+# Function to fetch and display FAQs
+def display_faqs():
+    faq_data = azsqldb.get_questions(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
     if faq_data:
-        # Display each question and its answer in a table format
-        for faq_id, faq_info in faq_data.items():
-            st.text("Question: " + faq_info['question'])
-            st.text("Answer: " + (faq_info['answer'] if faq_info['answer'] else "No answer yet"))
-            st.text("Asked by User ID: " + str(faq_info['user_id']))
-            st.write("---")  # A line to separate each FAQ
+        faq_list = [[faq_info['question'], faq_info['answer'] if faq_info['answer'] else "No answer yet"]
+                    for faq_info in faq_data.values()]
+        df = pd.DataFrame(faq_list, columns=["Question", "Answer"])
+        st.dataframe(df)
     else:
         st.write("No FAQs available for this class.")
+
+def teacher_faqs(class_id, sqlcursor):
+    # First, display the existing FAQs
+    display_faqs()
+
+    # Then, create the input form for adding a new FAQ
+    with st.form("add_faq_form"):
+        st.write("Add a new FAQ:")
+        new_question = st.text_input("Question")
+        new_answer = st.text_area("Answer")
+        submit_button = st.form_submit_button("Add FAQ")
+
+        if submit_button and new_question and new_answer:
+            # Add the FAQ to the database
+            azsqldb.add_faq(st.session_state.user_info['user_id'], class_id, new_question, new_answer, sqlcursor)
+            
+            # Refresh FAQs after adding new FAQ
+            st.experimental_rerun()
+
 
 def main():
     # Check if the user is logged in or not
@@ -123,22 +147,26 @@ def main():
         if st.session_state.user_info['role'] == 'teacher':
             teacher_sidebar()
             st.write("""
-    Here's a quick guide to the buttons you'll find on this page: 
-    - **FAQ**: View and nswer students' questions. 🎓
-    - **Schedule**: Use this to view and manage the class schedule. 🗓️
-    - **Upload Files**: Upload class materials, assignments, and other resources. 📚
-    """)
-            # Button to view FAQs
+                Here's a quick guide to the buttons you'll find on this page: 
+                - **FAQ**: View and answer students' questions. 🎓
+                - **Schedule**: Use this to view and manage the class schedule. 🗓️
+                - **Upload Files**: Upload class materials, assignments, and other resources. 📚
+            """)
+            # Button to toggle FAQs
             if st.button("FAQs"):
+                st.session_state.show_faqs = not st.session_state.show_faqs  # Toggle the show_faqs state
+
+            if st.session_state.show_faqs:
                 teacher_faqs(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
         
         else:
             student_sidebar()
             st.write("""
-    Here's a quick guide to the buttons you'll find on this page: 
-    - **FAQ**: View FAQs or ask a new one. 🎓
-    - **Schedule**: Use this to view and manage the class schedule. 🗓️
-    - **Upload Files**: Upload your notes, outlines, etc. 📚
-    """)
+                Here's a quick guide to the buttons you'll find on this page: 
+                - **FAQ**: View FAQs or ask a new one. 🎓
+                - **Schedule**: Use this to view and manage the class schedule. 🗓️
+                - **Upload Files**: Upload your notes, outlines, etc. 📚
+            """)
+
 if __name__ == "__main__":
     main()

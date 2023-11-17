@@ -47,7 +47,6 @@ def connect_to_azure_sql():
             st.warning(f"An error occurred while connecting to the database: {e}")
         return None
 
-
 def authenticate_user(sqlcursor, username, password):
     # Check if the username exists and retrieve the password, role, and user_id
     sqlcursor.execute("SELECT password, role, user_id FROM master.STUDYBUDDY.Users WHERE username = ?", (username,))
@@ -207,11 +206,10 @@ def get_questions(class_id, sqlcursor):
     question_records = sqlcursor.fetchall()
 
     # Create a dictionary mapping question_ids to their full information
-    question_info_mapping = {record[0]: {'class_id': record[0],
+    question_info_mapping = {record[4]: {'class_id': record[0],
                                          'user_id': record[1],
                                          'question': record[2],
-                                         'answer':record[3],
-                                         'faq_id':record[4]} for record in question_records}
+                                         'answer':record[3]} for record in question_records}
 
     return question_info_mapping
 
