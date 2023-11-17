@@ -165,8 +165,6 @@ def main():
                 st.session_state.show_faqs = not st.session_state.show_faqs  # Toggle the show_faqs state
 
             if st.session_state.show_faqs:
-                # make sure the file button doesn't show
-                st.session_state.show_file_upload = False
                 # set the show file upload button to false
                 teacher_faqs(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
 
