@@ -9,22 +9,14 @@
 #    Updated: 2023/11/05 20:20:07 by ammar syed       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-from Scripts import azsqldb
+from Scripts import azsqldb, sessionvars
 import streamlit as st
+
+sessionvars.initialize_session_vars()
 
 # Set the page title and the initial state of the sidebar
 st.set_page_config(page_title="Study Buddy",
                    initial_sidebar_state="auto")
-
-# Store the user information in a dictionary
-if "user_info" not in st.session_state:
-    st.session_state.user_info = {'user_id': None,
-                 'role': None,
-                 'username': None}
-
-# Create a cursor object
-if "sqlcursor" not in st.session_state:
-    st.session_state.sqlcursor = azsqldb.connect_to_azure_sql()
 
 def signup():
     st.subheader("Sign Up")
