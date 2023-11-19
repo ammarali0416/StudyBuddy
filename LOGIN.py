@@ -62,10 +62,12 @@ def login():
             st.error(message)
 
 
-
 def main():
     # Main application
     # Create a dropdown to select action (Sign Up or Log In)
+    st.title("Welcome to Study Buddy!")
+    st.subheader("An Intelligent Education App")
+
     selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"])
 
     if selected_action == "Sign Up":
