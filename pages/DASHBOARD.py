@@ -32,6 +32,7 @@ if 'update_faqs' not in st.session_state:
     st.session_state.update_faqs = True
 
 
+
 def fetch_class_data():
     return azsqldb.get_classes(st.session_state.user_info['user_id'],
                                 st.session_state.user_info['role'],
@@ -107,34 +108,30 @@ def student_sidebar():
                     st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
                     st.experimental_rerun()  # Rerun the script to reflect the changes
 
-# Function to fetch and display FAQs
-def display_faqs():
-    faq_data = azsqldb.get_questions(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
-    if faq_data:
-        faq_list = [[faq_info['question'], faq_info['answer'] if faq_info['answer'] else "No answer yet"]
-                    for faq_info in faq_data.values()]
-        df = pd.DataFrame(faq_list, columns=["Question", "Answer"])
-        st.dataframe(df)
+def teacher_faqs():
+    # Fetch FAQs as a DataFrame
+    faq_df = azsqldb.get_questions(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
+
+    if not faq_df.empty:
+        # Display the DataFrame with an editable interface
+        edited_data = st.data_editor(key="FAQ Editor", 
+                                    data=faq_df[['question', 'answer', 'faq_id', 'class_id', 'user_id']],
+                                    num_rows='dynamic',
+                                    disabled=['faq_id', 'class_id', 'user_id'],
+                                    column_config={'question': 'Question',
+                                                    'answer': 'Answer',
+                                                    'faq_id': None,
+                                                    'class_id': None,
+                                                    'user_id': None},
+                                    hide_index=True)
+
+        if st.button('Publish'):
+            with st.spinner('Updating FAQs...'):
+                # Check for changes and update
+                azsqldb.update_faqs(faq_df, edited_data, st.session_state.sqlcursor)
+                st.success("FAQs updated successfully!")
     else:
         st.write("No FAQs available for this class.")
-
-def teacher_faqs(class_id, sqlcursor):
-    # First, display the existing FAQs
-    display_faqs()
-
-    # Then, create the input form for adding a new FAQ
-    with st.form("add_faq_form"):
-        st.write("Add a new FAQ:")
-        new_question = st.text_input("Question")
-        new_answer = st.text_area("Answer")
-        submit_button = st.form_submit_button("Add FAQ")
-
-        if submit_button and new_question and new_answer:
-            # Add the FAQ to the database
-            azsqldb.add_faq(st.session_state.user_info['user_id'], class_id, new_question, new_answer, sqlcursor)
-            
-            # Refresh FAQs after adding new FAQ
-            st.experimental_rerun()
 
 
 def main():
@@ -157,7 +154,7 @@ def main():
                 st.session_state.show_faqs = not st.session_state.show_faqs  # Toggle the show_faqs state
 
             if st.session_state.show_faqs:
-                teacher_faqs(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
+                teacher_faqs()
         
         else:
             student_sidebar()

@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import pyodbc
 import random
 import streamlit as st
+import pandas as pd
 
 
 def connect_to_azure_sql():
@@ -197,32 +198,94 @@ def ask_question(class_id, user_id, question, sqlcursor):
 def get_questions(class_id, sqlcursor):
     """
     Get all the questions and answers for a particular class
-    use this to populate the FAQs
-    get_questions(st.session_state.class_info['class_id'], st.session_state.sqlcursor)
+    and return them as a Pandas DataFrame.
     """
     # Execute a SQL query to get all the questions for the provided class_id
     sqlcursor.execute("SELECT class_id, user_id, question, answer, faq_id FROM master.STUDYBUDDY.FAQs WHERE class_id = ?", (class_id,))
+    
     # Fetch all the records returned by the query
     question_records = sqlcursor.fetchall()
 
-    # Create a dictionary mapping question_ids to their full information
-    question_info_mapping = {record[4]: {'class_id': record[0],
-                                         'user_id': record[1],
-                                         'question': record[2],
-                                         'answer':record[3]} for record in question_records}
+    # Create a list of dictionaries for each record
+    data = []
+    for record in question_records:
+        data.append({
+            'class_id': record[0],
+            'user_id': record[1],
+            'question': record[2],
+            'answer': record[3],
+            'faq_id': record[4]
+        })
 
-    return question_info_mapping
+    # Create and return a DataFrame from the list of dictionaries
+    df = pd.DataFrame(data)
+    return df
 
-def add_faq(user_id, class_id, question, answer, sqlcursor):
-    """
-    Add a new FAQ to the FAQs table. For teachers only.
-    add_faq(st.session_state.user_info['user_id'], 
-            st.session_state.class_info['class_id'], 
-            some_question_variable, 
-            some_answer_variable, 
-            st.session_state.sqlcursor)
-    """
-    # Execute a SQL query to insert the new FAQ
-    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.FAQs (user_id, class_id, question, answer) VALUES (?, ?, ?, ?)", (user_id, class_id, question, answer))
-    # Commit the transaction
-    sqlcursor.connection.commit()
+def update_faqs(original_df, edited_df, sqlcursor):
+    # Create dictionaries from DataFrames for easier comparison
+    original_dict = original_df.set_index('faq_id').to_dict(orient='index')
+    edited_dict = edited_df.set_index('faq_id').to_dict(orient='index')
+
+    # Identify modified rows
+    modified_rows = []
+    for faq_id, row in edited_dict.items():
+        if faq_id in original_dict:
+            if row['question'] != original_dict[faq_id]['question'] or row['answer'] != original_dict[faq_id]['answer']:
+                modified_row = row.copy()
+                modified_row['faq_id'] = faq_id  # Include the faq_id
+                modified_rows.append(modified_row)
+
+    # Convert to DataFrame
+    modified_rows_df = pd.DataFrame(modified_rows)
+    
+    # Check if there are modified rows and update them in the database
+    if not modified_rows_df.empty:
+        for index, row in modified_rows_df.iterrows():
+            # Prepare the UPDATE statement
+            update_query = """
+            UPDATE STUDYBUDDY.FAQs 
+            SET question = ?, answer = ?
+            WHERE faq_id = ?
+            """
+            # Execute the UPDATE statement
+            sqlcursor.execute(update_query, row['question'], row['answer'], row['faq_id'])     
+        # Commit the changes after all updates
+        sqlcursor.connection.commit()
+
+    # Identify new questions
+    new_questions = edited_df[~edited_df['faq_id'].isin(original_df['faq_id'])].reset_index(drop=True)
+
+    # Get the user and class IDs from the original DataFrame
+    default_class_id = original_df.iloc[0]['class_id']
+    default_user_id = original_df.iloc[0]['user_id']
+
+    # Add class_id and user_id to new_questions
+    new_questions['class_id'] = default_class_id
+    new_questions['user_id'] = default_user_id
+
+    # Check if there are new questions and insert them into the database
+    if not new_questions.empty:
+        for index, row in new_questions.iterrows():
+            insert_query = """
+            INSERT INTO STUDYBUDDY.FAQs (question, answer, class_id, user_id) 
+            VALUES (?, ?, ?, ?)
+            """
+            sqlcursor.execute(insert_query, row['question'], row['answer'], row['class_id'], row['user_id'])
+
+        # Commit the changes after all inserts
+        sqlcursor.connection.commit()
+
+    # Identify deleted questions
+    deleted_questions = original_df[~original_df['faq_id'].isin(edited_df['faq_id'])].reset_index(drop=True)
+
+    # Check if there are questions to delete and delete them from the database
+    if not deleted_questions.empty:
+        faq_ids_to_delete = tuple(deleted_questions['faq_id'])
+        delete_query = """
+        DELETE FROM STUDYBUDDY.FAQs 
+        WHERE faq_id IN ({})
+        """.format(','.join('?' * len(faq_ids_to_delete)))
+        sqlcursor.execute(delete_query, faq_ids_to_delete)
+
+        # Commit the changes after deletion
+        sqlcursor.connection.commit()
