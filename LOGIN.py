@@ -61,7 +61,6 @@ def login():
         else:
             st.error(message)
 
-
 def main():
     # Main application
     # Create a dropdown to select action (Sign Up or Log In)
