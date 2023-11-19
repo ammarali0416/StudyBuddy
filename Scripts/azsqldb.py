@@ -180,21 +180,6 @@ def join_class(user_id, sqlcursor, class_code):
 
     return "You have successfully joined the class!"
 
-def ask_question(class_id, user_id, question, sqlcursor):
-    """
-    Add a new question to the Questions table
-    add_question(
-        st.session_state.class_info['class_id'],
-        st.session_state.user_info['user_id'],
-        some_question_variable,
-        st.session_state.sqlcursor
-    )
-    """
-    # Execute a SQL query to insert the new question
-    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.FAQs (class_id, user_id, question) VALUES (?, ?, ?)", (class_id, user_id, question))
-    # Commit the transaction
-    sqlcursor.connection.commit()
-
 def get_questions(class_id, sqlcursor):
     """
     Get all the questions and answers for a particular class
@@ -222,9 +207,13 @@ def get_questions(class_id, sqlcursor):
     return df
 
 def update_faqs(original_df, edited_df, sqlcursor):
-    # Create dictionaries from DataFrames for easier comparison
+    # Separate new questions (with None in faq_id)
+    new_questions = edited_df[edited_df['faq_id'].isnull()]
+    existing_questions = edited_df[edited_df['faq_id'].notnull()]
+
+    # Process existing questions
+    edited_dict = existing_questions.set_index('faq_id').to_dict(orient='index')
     original_dict = original_df.set_index('faq_id').to_dict(orient='index')
-    edited_dict = edited_df.set_index('faq_id').to_dict(orient='index')
 
     # Identify modified rows
     modified_rows = []
@@ -261,7 +250,7 @@ def update_faqs(original_df, edited_df, sqlcursor):
 
     # Add class_id and user_id to new_questions
     new_questions['class_id'] = default_class_id
-    new_questions['user_id'] = default_user_id
+    new_questions['user_id'] = st.session_state.user_info['user_id']
 
     # Check if there are new questions and insert them into the database
     if not new_questions.empty:
