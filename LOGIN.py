@@ -11,10 +11,13 @@
 # **************************************************************************** #
 from Scripts import azsqldb
 import streamlit as st
+from markdownlit import mdlit
 
 # Set the page title and the initial state of the sidebar
 st.set_page_config(page_title="Study Buddy",
                    initial_sidebar_state="auto")
+
+
 
 # Store the user information in a dictionary
 if "user_info" not in st.session_state:
@@ -27,7 +30,9 @@ if "sqlcursor" not in st.session_state:
     st.session_state.sqlcursor = azsqldb.connect_to_azure_sql()
 
 def signup():
-    st.subheader("Sign Up")
+    st.subheader(":rainbow[Sign Up]")
+    
+
     
     # User details input
     new_username = st.text_input("Create a new username")

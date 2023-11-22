@@ -1,4 +1,6 @@
 import streamlit as st
+from streamlit_extras.colored_header import colored_header
+from markdownlit import mdlit
 
 # Create a session state to persist data
 if 'classes' not in st.session_state:
@@ -9,7 +11,17 @@ def add_class(new_class):
     st.session_state.classes.append(new_class)
 
 # Main application
-st.title("Welcome (Teacher) to your Home Page")
+#st.title("Welcome (Teacher) to your Home Page")#
+def title():
+    colored_header(
+        label="[red]Welcome (Teacher)[/red] [blue]to your new home page[/blue]",
+        color_name="violet-70",
+        )
+
+def title2():
+    mdlit(
+        " ## [red]Welcome (Teacher)[/red] [blue]to your new home page[/blue]"
+        )
 
 # Sidebar for class input
 st.sidebar.title("Manage Classes")
@@ -49,3 +61,8 @@ if col3.button("Schedule"):
 if col4.button("Add Module"):
     st.write("Button 4 clicked!")
 
+
+if st.session_state.user_info['user_id']:
+    title()
+if st.session_state.user_info['user_id']:  
+    title2()
