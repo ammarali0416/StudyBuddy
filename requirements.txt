@@ -6,3 +6,8 @@ tiktoken
 python-dotenv
 pyodbc
 streamlit
+wget
+azure-search-documents==11.4.0b8
+azure-identity
+PyPDF2
+re

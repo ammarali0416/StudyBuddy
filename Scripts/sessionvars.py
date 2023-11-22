@@ -40,7 +40,8 @@ def initialize_session_vars():
     if "class_info" not in st.session_state:
         st.session_state.class_info = {'class_id': None,
                                     'class_name': None,
-                                    'class_code': None}
+                                    'class_code': None,
+                                    'index_name': None}
     # Store the class information
     if "class_info" not in st.session_state:
         st.session_state.class_info = None
@@ -60,4 +61,7 @@ def initialize_session_vars():
     if 'show_faqs' not in st.session_state:
         st.session_state.show_faqs = False
 
-    
+    ####
+    # upload file vars
+    if 'show_upload_file' not in st.session_state:
+        st.session_state.show_upload_file = False

@@ -103,17 +103,17 @@ def get_classes(user_id, role, sqlcursor):
     # Check if the role is 'teacher'
     if role == 'teacher':
         sqlcursor.execute("""
-            SELECT class_id, class_name, class_code 
+            SELECT class_id, class_name, class_code, index_name 
             FROM master.STUDYBUDDY.Classes 
             WHERE teacher_id = ?
         """, (user_id,))
         class_records = sqlcursor.fetchall()
         # Create a dictionary mapping class names to their full information
-        class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2]} for record in class_records}
+        class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2], 'index_name':record[3]} for record in class_records}
         return class_info_mapping
     else:  # Assuming the only other role is 'student'
         sqlcursor.execute("""
-            SELECT c.class_id, c.class_name, c.class_code 
+            SELECT c.class_id, c.class_name, c.class_code, c.index_name
             FROM master.STUDYBUDDY.Classes c 
             INNER JOIN master.STUDYBUDDY.StudentClass sc 
             ON c.class_id = sc.class_id 
@@ -121,7 +121,7 @@ def get_classes(user_id, role, sqlcursor):
         """, (user_id,))
         class_records = sqlcursor.fetchall()
 
-        class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2]} for record in class_records}
+        class_info_mapping = {record[1]: {'class_id': record[0], 'class_name': record[1], 'class_code': record[2],'index_name':record[3]} for record in class_records}
         return class_info_mapping
        
 """Example usage of get_classes() function:
@@ -278,3 +278,19 @@ def update_faqs(original_df, edited_df, sqlcursor):
 
         # Commit the changes after deletion
         sqlcursor.connection.commit()
+
+def update_class(sqlcursor, class_id, field, new_value):
+    """
+    Update the class table with the new value for the provided field
+    """
+    # Prepare the UPDATE statement
+    update_query = f"""
+    UPDATE STUDYBUDDY.Classes 
+    SET {field} = ?
+    WHERE class_id = ?
+    """
+    # Execute the UPDATE statement
+    sqlcursor.execute(update_query, new_value, class_id)
+
+    # Commit the changes
+    sqlcursor.connection.commit()
