@@ -1,4 +1,4 @@
-StudyBuddy: An Intelligent Education App
+**StudyBuddy: An Intelligent Education App**
 
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions.
 
