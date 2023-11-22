@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from Scripts import azsqldb, sessionvars, __sidebar as sb, __faqs as fq
+from Scripts import azsqldb, sessionvars, __sidebar as sb, __faqs as fq, __fileupload as fu
 
 sessionvars.initialize_session_vars()
 
@@ -19,8 +19,9 @@ def main():
                 - **Schedule**: Use this to view and manage the class schedule. 🗓️
                 - **Upload Files**: Upload class materials, assignments, and other resources. 📚
             """)
-            # Display the faq button
+            # Display the buttons
             fq.teacher_faqs()
+            fu.upload_file()
         
         else:
             sb.student_sidebar()
@@ -30,9 +31,9 @@ def main():
                 - **Schedule**: Use this to view and manage the class schedule. 🗓️
                 - **Upload Files**: Upload your notes, outlines, etc. 📚
             """)
-            # Student FAQs
+            # Display the buttons
             fq.student_faqs()
-
+            fu.upload_file()
 
 if __name__ == "__main__":
     main()
