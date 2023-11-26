@@ -2,11 +2,13 @@
 
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions.
 
+Teachers can create classes, manage FAQs, and upload files.
+Students join classes using a class code and interact with the FAQs and chatbot.
+
 Prerequisites
 
 This program uses the following Azure services:
 
-Azure Open AI
 Azure SQL Database
 Azure AI Search
 Create an Azure account here.
@@ -43,10 +45,20 @@ Manages session variables for state maintenance across the application.
 
 Deployment
 
+Environment Variables
+The project uses environment variables to manage configuration and sensitive information. Please create a .env file in the root directory of this project with the following variables:
+
+OPENAI_API_KEY: Your API key for OpenAI services.
+AZURE_SERVER: The server address for your Azure SQL Database.
+AZURE_DATABASE: The name of your Azure SQL database.
+AZURE_USERNAME: Your username for Azure SQL Database.
+AZURE_PASSWORD: Your password for Azure SQL Database.
+AZURE_AI_SEARCH_API_KEY: Your API key for Azure AI Search services.
+AZURE_AI_SEARCH_ENDPOINT: The endpoint URL for Azure AI Search services.
+Replace the placeholder values with your actual credentials to ensure proper functionality of the application.
+
 Run login.py to start. Users will enter their credentials and be redirected to the DASHBOARD.py.
 
-Teachers can create classes, manage FAQs, and upload files.
-Students join classes using a class code and interact with the FAQs and chatbot.
 Built With
 
 Streamlit - The framework used to build the app.
