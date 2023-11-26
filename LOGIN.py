@@ -13,6 +13,22 @@ from Scripts import azsqldb
 import streamlit as st
 from markdownlit import mdlit
 
+custom_width = 250
+
+ 
+
+
+def logo():
+    # Assuming the image is in the same directory as your script
+    logo_path = 'StudyBuddyLogo.png'
+
+    col1, col2, col3 = st.columns([1,1,1])
+ 
+
+    # Display the logo at the top of the page
+    with col2:
+     st.image(logo_path, width= custom_width)
+
 # Set the page title and the initial state of the sidebar
 st.set_page_config(page_title="Study Buddy",
                    initial_sidebar_state="auto")
@@ -29,8 +45,10 @@ if "user_info" not in st.session_state:
 if "sqlcursor" not in st.session_state:
     st.session_state.sqlcursor = azsqldb.connect_to_azure_sql()
 
+
+
 def signup():
-    st.subheader(":rainbow[Sign Up]")
+    st.subheader("Sign Up")
     
 
     
@@ -41,7 +59,7 @@ def signup():
     school = st.text_input("Enter your school")
     
     # Role selection using radio buttons
-    role = st.radio("Select your role", ["student", "teacher"])
+    role = st.radio("Select your role", ["Student", "Teacher"])
     
     if st.button("Sign Up"):
         if new_username and new_password and email and school:
@@ -71,6 +89,7 @@ def login():
 def main():
     # Main application
     # Create a dropdown to select action (Sign Up or Log In)
+    logo()
     selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"])
 
     if selected_action == "Sign Up":
