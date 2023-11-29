@@ -53,7 +53,7 @@ def LoginContainer():
     # Main application
     # Create a dropdown to select action (Sign Up or Log In)
 
-    selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"])
+    selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"], key="login_selectbox")
 
     if selected_action == "Sign Up":
         signup()

@@ -1,4 +1,4 @@
-from Scripts import azsqldb, sessionvars, __login as lg
+from Scripts import azsqldb, sessionvars, __login as lg, __sidebar as sb
 import streamlit as st
 from markdownlit import mdlit
 
@@ -19,5 +19,20 @@ with col2:
 st.subheader("An Intelligent Education App", )
 
 # Display the login container
-while not st.session_state.user_info['user_id']:
+# This block defining what the app does when the user_id value is equal to None
+if not st.session_state.user_info['user_id']:
     lg.LoginContainer()
+    with st.sidebar:
+        st.warning("Please sign in first!")
+    if st.session_state.user_info['user_id']:
+        st.experimental_rerun()
+
+
+# If the user is logged in, display the chat screen
+if st.session_state.user_info['user_id']:
+    st.markdown(mdlit("""This is where the chat screen will be displayed."""))
+    
+    # Display the teacher sidebar
+    if st.session_state.user_info['role']:
+        sb.teacher_sidebar()  
+    

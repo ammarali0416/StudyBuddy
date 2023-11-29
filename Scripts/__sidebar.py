@@ -14,7 +14,7 @@
     This file contains the sidebar for the dashboard page
 '''
 import streamlit as st
-from Scripts import azsqldb, sessionvars
+from Scripts import azsqldb, sessionvars, __faqs as fq
 
 sessionvars.initialize_session_vars()
 
@@ -58,6 +58,11 @@ def teacher_sidebar():
                         st.session_state.selected_class_name = new_class_name  # Update the selected class name
                         st.session_state.show_new_class_input = False  # Hide the input fields after submission
                         st.experimental_rerun()  # Rerun the script to reflect the changes
+        st.sidebar.title("Check the FAQs")
+        fq.teacher_faqs()
+
+
+        
 
 
 def student_sidebar():
