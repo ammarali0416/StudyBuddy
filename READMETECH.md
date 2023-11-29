@@ -18,7 +18,7 @@ This program uses the following Azure services:
 - Create an Azure account here (make as a link).
 
 #### Required packages
-Execute ```cmd pip install -r requirements.txt``` to install necessary packages.
+Execute ```pip install -r requirements.txt``` to install necessary packages.
 
 #### Python environment
 Please create a .env file in the root directory of this project with the following variables:
@@ -32,7 +32,6 @@ AZURE_AI_SEARCH_API_KEY: Your API key for Azure AI Search services.
 AZURE_AI_SEARCH_ENDPOINT: The endpoint URL for Azure AI Search services.
 ```
 Replace the placeholder values with your actual credentials to ensure proper functionality of the application.
-
 
 ## Features and Modules
 
@@ -61,7 +60,7 @@ Handles interactions with Azure SQL Database for data storage and retrieval.
 Manages session variables for state maintenance across the application.
 
 ## Deployment
-Run ```cmd streamlit run login.py`` to deploy the app locally
+Run ```streamlit run login.py`` to deploy the app locally
 
 ## Packages Used
 
