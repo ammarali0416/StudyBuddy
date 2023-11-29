@@ -33,6 +33,7 @@ if st.session_state.user_info['user_id']:
     st.markdown(mdlit("""This is where the chat screen will be displayed."""))
     
     # Display the teacher sidebar
-    if st.session_state.user_info['role']:
+    if st.session_state.user_info['role'] == 'teacher':
         sb.teacher_sidebar()  
-    
+    else:
+        sb.student_sidebar()
