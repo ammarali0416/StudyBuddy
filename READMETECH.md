@@ -60,7 +60,7 @@ Handles interactions with Azure SQL Database for data storage and retrieval.
 Manages session variables for state maintenance across the application.
 
 ## Deployment
-Run ```streamlit run login.py`` to deploy the app locally
+Run ```streamlit run login.py``` to deploy the app locally
 
 ## Packages Used
 
