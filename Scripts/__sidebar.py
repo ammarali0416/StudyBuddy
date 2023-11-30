@@ -14,7 +14,7 @@
     This file contains the sidebar for the dashboard page
 '''
 import streamlit as st
-from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu
+from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc
 
 sessionvars.initialize_session_vars()
 
@@ -74,6 +74,9 @@ def teacher_sidebar():
         st.sidebar.title("Upload Files")
         fu.upload_file()
 
+        #schedule
+        st.sidebar.title("Schedule")
+        sc.teacher_schedule()
 
         
 
@@ -127,3 +130,7 @@ def student_sidebar():
         #file upload
         st.sidebar.title("Upload Files")
         fu.upload_file()
+
+        #schedule
+        st.sidebar.title("Schedule")
+        sc.student_schedule()
