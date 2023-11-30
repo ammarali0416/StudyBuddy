@@ -14,20 +14,15 @@ def teacher_schedule():
     def show_schedule():
         st.table(st.session_state.schedule_data)
 
-    def main():
-        st.title("My Schedule")
+    with st.form("task_form"):
+        task = st.text_input("Task")
+        due_date = st.date_input("Due Date", min_value=datetime.today())
+        submit_button = st.form_submit_button("Add Task")
 
-        with st.form("task_form"):
-            task = st.text_input("Task")
-            due_date = st.date_input("Due Date", min_value=datetime.today())
-            submit_button = st.form_submit_button("Add Task")
+    if submit_button and task:
+        add_task(task, due_date)
 
-        if submit_button and task:
-            add_task(task, due_date)
-
-        show_schedule()
-    if __name__ == "__main__":
-            main()
+    show_schedule()
 
 
 
@@ -58,25 +53,13 @@ def student_schedule():
                     if st.button('Done', key=task):
                         st.session_state.completed_tasks.append(task)
 
-    def main():
-        st.title("Student Schedule")
+    # Display the schedule
+    show_schedule()
 
-        # Display the schedule
-        show_schedule()
-
-        # Optionally, display completed tasks
-        st.write("## Completed Tasks")
-        for task in st.session_state.completed_tasks:
-            st.write(task)
-    if __name__ == "__main__":
-        main()
-
-
-
-if st.session_state.user_info['role'] == 'teacher':
-    teacher_schedule()  
-else:
-    student_schedule()
+    # Optionally, display completed tasks
+    st.write("## Completed Tasks")
+    for task in st.session_state.completed_tasks:
+        st.write(task)
 
 
 

@@ -75,7 +75,7 @@ def teacher_sidebar():
         fu.upload_file()
 
         #schedule
-        st.sidebar.title("Schedule")
+        st.sidebar.title("Manage Assignments")
         sc.teacher_schedule()
 
         
@@ -132,5 +132,5 @@ def student_sidebar():
         fu.upload_file()
 
         #schedule
-        st.sidebar.title("Schedule")
+        st.sidebar.title("Upcoming Assignments")
         sc.student_schedule()
