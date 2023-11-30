@@ -12,3 +12,4 @@ azure-identity
 PyPDF2
 re
 io
+markdownlit
