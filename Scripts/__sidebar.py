@@ -14,7 +14,7 @@
     This file contains the sidebar for the dashboard page
 '''
 import streamlit as st
-from Scripts import azsqldb, sessionvars
+from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc
 
 sessionvars.initialize_session_vars()
 
@@ -26,9 +26,16 @@ def fetch_class_data():
 def teacher_sidebar():
     # Fetch class data
     class_data = fetch_class_data()
-
+   
     # Sidebar for class selection and new class creation
     with st.sidebar:
+        st.write("""
+                Here's a quick guide to the buttons you'll find on this page: 
+                - **FAQ**: View and answer students' questions. 🎓
+                - **Schedule**: Use this to view and manage the class schedule. 🗓️
+                - **Upload Files**: Upload class materials, assignments, and other resources. 📚
+            """)
+        ## Class management
         st.sidebar.title("Manage Classes")
         if class_data:
             # Select box for choosing the class
@@ -58,6 +65,20 @@ def teacher_sidebar():
                         st.session_state.selected_class_name = new_class_name  # Update the selected class name
                         st.session_state.show_new_class_input = False  # Hide the input fields after submission
                         st.experimental_rerun()  # Rerun the script to reflect the changes
+        
+        ### Faq functions
+        st.sidebar.title("FAQs")
+        fq.teacher_faqs()
+
+        #file upload
+        st.sidebar.title("Upload Files")
+        fu.upload_file()
+
+        #schedule
+        st.sidebar.title("Manage Assignments")
+        sc.teacher_schedule()
+
+        
 
 
 def student_sidebar():
@@ -65,6 +86,12 @@ def student_sidebar():
     class_data = fetch_class_data()
     # Sidebar for class selection and new class joining
     with st.sidebar:
+        st.write("""
+                Here's a quick guide to the buttons you'll find on this page: 
+                - **FAQ**: View FAQs or ask a new one. 🎓
+                - **Schedule**: Use this to view and manage the class schedule. 🗓️
+                - **Upload Files**: Upload your notes, outlines, etc. 📚
+            """)
         st.sidebar.title("Manage Classes")
         if class_data:
             # Select box for choosing the class
@@ -96,3 +123,14 @@ def student_sidebar():
                         st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
                         st.experimental_rerun()  # Rerun the script to reflect the changes
 
+
+        st.sidebar.title("FAQs")
+        fq.student_faqs()
+
+        #file upload
+        st.sidebar.title("Upload Files")
+        fu.upload_file()
+
+        #schedule
+        st.sidebar.title("Upcoming Assignments")
+        sc.student_schedule()

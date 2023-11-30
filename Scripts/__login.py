@@ -14,10 +14,6 @@ import streamlit as st
 
 sessionvars.initialize_session_vars()
 
-# Set the page title and the initial state of the sidebar
-st.set_page_config(page_title="Study Buddy",
-                   initial_sidebar_state="auto")
-
 def signup():
     st.subheader("Sign Up")
     
@@ -53,13 +49,11 @@ def login():
         else:
             st.error(message)
 
-def main():
+def LoginContainer():
     # Main application
     # Create a dropdown to select action (Sign Up or Log In)
-    st.title("Welcome to Study Buddy!")
-    st.subheader("An Intelligent Education App")
 
-    selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"])
+    selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"], key="login_selectbox")
 
     if selected_action == "Sign Up":
         signup()
@@ -69,6 +63,3 @@ def main():
     # check if the user is logged in and if so display this at the bottom of the screeon
     if st.session_state.user_info['user_id'] != None:
         st.success(f"Welcome, {st.session_state.user_info['username']}! \n Your dashboard is now available!")
-
-if __name__ == "__main__":
-    main()
