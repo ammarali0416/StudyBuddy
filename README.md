@@ -29,13 +29,13 @@ Run `pip install -r requirements.txt` in your terminal to install necessary pack
 #### Python Environment
 Configure a `.env` file in the root directory with the following variables:
 
-OPENAI_API_KEY= Your API key for Open AI services
-AZURE_SERVER= The server address for your Azure SQL Database
-AZURE_DATABASE= The name of your Azure SQL database
-AZURE_USERNAME= Your username for Azure SQL Database
-AZURE_PASSWORD= Your password for Azure SQL Database
-AZURE_AI_SEARCH_API_KEY= Your API key for Azure AI Search services
-AZURE_AI_SEARCH_ENDPOINT= The endpoint URL for Azure AI Search services
+OPENAI_API_KEY= Your API key for Open AI services  
+AZURE_SERVER= The server address for your Azure SQL Database  
+AZURE_DATABASE= The name of your Azure SQL database  
+AZURE_USERNAME= Your username for Azure SQL Database  
+AZURE_PASSWORD= Your password for Azure SQL Database  
+AZURE_AI_SEARCH_API_KEY= Your API key for Azure AI Search services  
+AZURE_AI_SEARCH_ENDPOINT= The endpoint URL for Azure AI Search services  
 
 
 ### Features and Modules
