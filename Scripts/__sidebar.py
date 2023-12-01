@@ -71,12 +71,8 @@ def teacher_sidebar():
         st.sidebar.title("Manage Assignments")
         sc.teacher_schedule()
 
-        
-
 
 def student_sidebar():
-    # Fetch class data
-    class_data = fetch_class_data()
     # Sidebar for class selection and new class joining
     with st.sidebar:
         st.write("""
@@ -86,36 +82,14 @@ def student_sidebar():
                 - **Upload Files**: Upload your notes, outlines, etc. 📚
             """)
         st.sidebar.title("Manage Classes")
-        if class_data:
-            # Select box for choosing the class
-            selected_class_name = st.selectbox("Select class:", list(class_data.keys()), index=list(class_data.keys()).index(st.session_state.selected_class_name) if st.session_state.selected_class_name in class_data else 0)
-            st.session_state.selected_class_name = selected_class_name
-            # Display the class info for the selected class
-            if selected_class_name:
-                selected_class_info = class_data[selected_class_name]
-                st.session_state.class_info = selected_class_info
-        else:
-            st.selectbox("Select class:", ["No classes available"])
-            st.write("You are not enrolled in any classes yet.")
+        cm.show_class()
+
         # Button to join a new class
         if st.button("Join a new class"):
             st.session_state.show_join_class_input = not st.session_state.show_join_class_input
 
         if st.session_state.show_join_class_input:
-            # Input field and button for joining a new class
-            if st.session_state.show_join_class_input:
-                new_class_code = st.text_input("Enter the class code")
-                join_class_button = st.button("Join Class")
-                # Block to handle form submission
-                if join_class_button and new_class_code:
-                    join_message = azsqldb.join_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_code)
-                    st.warning(join_message)
-                    # Handle the a successful class join
-                    if join_message == "You have successfully joined the class!":
-                        class_data = fetch_class_data()  # Refresh the class data
-                        st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
-                        st.experimental_rerun()  # Rerun the script to reflect the changes
-
+            cm.join_class()
 
         st.sidebar.title("FAQs")
         fq.student_faqs()
