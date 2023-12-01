@@ -50,29 +50,44 @@ def teacher_sidebar():
             st.selectbox("Select class:", ["No classes available"])
             st.write("You haven't created any classes yet.")
 
-        # Button to create a new class
-        if st.button("Create a new class"):
-            st.session_state.show_new_class_input = not st.session_state.show_new_class_input
+        col1, col2 = st.columns([1,1])
 
+        with col1:
+            # Button to create a new class
+            if st.button("Create a new class"):
+                st.session_state.show_new_class_input = not st.session_state.show_new_class_input
+                st.session_state.show_upload_file = False
+
+        with col2:
+            # Button to upload class level files
+            if st.button("Upload File", key='class_upload'):
+                st.session_state.show_upload_file = not st.session_state.show_upload_file ## Upload class files
+                st.session_state.show_new_class_input = False
+
+        
+        # Block to create a new class
         if st.session_state.show_new_class_input:
             # Input field and button for new class creation
-            if st.session_state.show_new_class_input:
-                new_class_name = st.text_input("Enter the name for the new class")
-                if st.button("Submit New Class"):
-                    if new_class_name:
-                        azsqldb.new_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_name)
-                        class_data = fetch_class_data()  # Refresh the class data
-                        st.session_state.selected_class_name = new_class_name  # Update the selected class name
-                        st.session_state.show_new_class_input = False  # Hide the input fields after submission
-                        st.experimental_rerun()  # Rerun the script to reflect the changes
-        
+            new_class_name = st.text_input("Enter the name for the new class")
+            if st.button("Submit New Class"):
+                if new_class_name:
+                    azsqldb.new_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_name)
+                    class_data = fetch_class_data()  # Refresh the class data
+                    st.session_state.selected_class_name = new_class_name  # Update the selected class name
+                    st.session_state.show_new_class_input = False  # Hide the input fields after submission
+                    st.experimental_rerun()  # Rerun the script to reflect the changes
+
+        # Block to upload class level files
+        if st.session_state.show_upload_file:
+            fu.upload_class_file()
+
         ### Faq functions
         st.sidebar.title("FAQs")
         fq.teacher_faqs()
 
         #file upload
         st.sidebar.title("Upload Files")
-        fu.upload_file()
+        fu.upload_module_file()
 
         #schedule
         st.sidebar.title("Manage Assignments")
@@ -129,7 +144,7 @@ def student_sidebar():
 
         #file upload
         st.sidebar.title("Upload Files")
-        fu.upload_file()
+        fu.upload_module_file()
 
         #schedule
         st.sidebar.title("Upcoming Assignments")
