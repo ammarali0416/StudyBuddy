@@ -77,3 +77,21 @@ def initialize_session_vars():
         # Initialize the upload counter in session state
     if 'upload_key_2' not in st.session_state:
         st.session_state.upload_key_2 = str(randint(1000, 1000000))
+
+    ####
+    # Module vars
+        # Store the selected class so the dashboard remains the same after navigating to other pages
+    if 'selected_module_name' not in st.session_state:
+        st.session_state.selected_module_name = None
+    # New module toggle (teacher)
+    if 'new_module_toggle' not in st.session_state:
+        st.session_state.new_module_toggle = False
+    # Delete module toggle (teacher)
+    if 'delete_module_toggle' not in st.session_state:
+        st.session_state.delete_module_toggle = False
+    # Store module information
+    if "module_info" not in st.session_state:
+        st.session_state.module_info = {
+            'module_id': None,
+            'module_name': None
+        }

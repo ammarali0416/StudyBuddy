@@ -14,14 +14,9 @@
     This file contains the sidebar for the dashboard page
 '''
 import streamlit as st
-from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc, __classmanager as cm
+from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc, __classmanager as cm, __modules as md
 
 sessionvars.initialize_session_vars()
-
-def fetch_class_data():
-    return azsqldb.get_classes(st.session_state.user_info['user_id'],
-                                st.session_state.user_info['role'],
-                                st.session_state.sqlcursor)
 
 def teacher_sidebar():   
     # Sidebar for class selection and new class creation
@@ -58,6 +53,25 @@ def teacher_sidebar():
         # Block to upload class level files
         if st.session_state.show_upload_file:
             fu.upload_class_file()
+
+        #### Module management
+        st.sidebar.title("Modules")
+        md.show_module()
+
+        col3, col4 = st.columns([1,1])
+        
+        with col3:
+            if st.button("Create a new module"):
+                st.session_state.new_module_toggle = not st.session_state.new_module_toggle
+        with col4:  
+            if st.button("Delete a module"):
+                st.session_state.delete_module_toggle = not st.session_state.delete_module_toggle
+
+        if st.session_state.new_module_toggle:
+            md.create_new_module()
+        
+        if st.session_state.delete_module_toggle:    
+            md.delete_module()
 
         ### Faq functions
         st.sidebar.title("FAQs")
