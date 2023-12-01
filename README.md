@@ -3,6 +3,7 @@
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions. It offers a range of features including class creation, FAQ management, file uploads for teachers, and interactive class joining and FAQ interactions for students.
 
 ## How it Works
+![Study Buddy Architecture Diagram](Overview.png)
 
 StudyBuddy operates through a user-friendly interface, allowing teachers to create classes, manage FAQs, and upload files. Students can join classes using a class code and interact with the FAQs and chatbot.
 
