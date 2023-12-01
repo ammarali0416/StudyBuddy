@@ -1,38 +1,82 @@
-# StudyBuddy
-An Intelligent Education App
+StudyBuddy: An Intelligent Education App
+
+StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions. It offers a range of features including class creation, FAQ management, file uploads for teachers, and interactive class joining and FAQ interactions for students.
+
+How it Works
+
+StudyBuddy operates through a user-friendly interface, allowing teachers to create classes, manage FAQs, and upload files. Students can join classes using a class code and interact with the FAQs and chatbot.
+
+Technical Details
+The application is structured with modularity in mind. Each feature, such as user authentication (LOGIN.py), dashboard management (DASHBOARD.py), FAQ handling (__faqs.py), and others, is encapsulated in its own script. This modular approach not only makes the codebase easier to navigate but also simplifies maintenance and future enhancements.
+
+Modules are imported efficiently, ensuring that each script only loads the necessary dependencies. This reduces the app's overall memory footprint and improves performance. For instance, sessionvars.py is crucial for maintaining user state across the application and is imported in scripts where session management is required. Similarly, azsqldb.py handles all interactions with the Azure SQL Database and is imported in modules requiring database access.
 
 Prerequisites
+Azure Services
 
-This program uses the following Azure services:
-- Azure Open AI
-- Azure SQL Database
-- Azure AI Search
+Azure Open AI
+Azure SQL Database
+Azure AI Search
+Create an Azure account here if you do not already have one.
 
-If you do not have an Azure account, you can use this link to create one.
-- [Azure Homepage](azure.microsoft.com)
+Required Packages
 
-## Installing
+Run pip install -r requirements.txt in your terminal to install necessary packages.
 
-Prior to running the program you must run ```pip install -r requiremnets.txt``` in your terminal. The terminal will check if you have all the necessary packages installed to run the program, and if not it will install them for you.
+Python Environment
 
+Configure a .env file in the root directory with the following variables:
 
-## Deployment
-Once login.py is run and the user inputs their credentials, the dashboard and {insert other pages} will be available.
-Once the dashboard is accessed, the user must select a class to interact with from the drop down menu. If the teacher interface is visible and no classes have been created yet, the teacher must first add a class. If the student interface is visible and the student has not joined any classes, the student must first input a class code correlated to an existing class to join that class.
+vbnet
+Copy code
+OPENAI_API_KEY: Your API key for Open AI services.
+AZURE_SERVER: The server address for your Azure SQL Database.
+AZURE_DATABASE: The name of your Azure SQL database.
+AZURE_USERNAME: Your username for Azure SQL Database.
+AZURE_PASSWORD: Your password for Azure SQL Database.
+AZURE_AI_SEARCH_API_KEY: Your API key for Azure AI Search services.
+AZURE_AI_SEARCH_ENDPOINT: The endpoint URL for Azure AI Search services.
+Features and Modules
 
--If the FAQ button is selected on the teacher interface, the user can add a new FAQ or edit existing FAQs in both the question and answer columns.
-If the FAQ button is selected on the student interface, the user can only add new questions but not edit any existing questions or answers.
+LOGIN.py
 
--File Upload
+Manages user authentication, redirecting to the appropriate interface based on user role (teacher/student).
 
--Schedule
+DASHBOARD.py
 
+Serves as the core interface after login, presenting a dashboard for class selection, and viewing schedules.
 
-## Built With
+__faqs.py
 
--[Streamlit](streamlit.io)
+Facilitates a dynamic FAQ section where teachers can add/edit FAQs, and students can view and add new questions.
 
+chatbot.py
 
-## License
+An AI-driven chatbot for real-time assistance, powered by Azure Open AI.
 
-This project is licensed under the MIT License - see the LICENSE.md file for details
+__sidebar.py
+
+Provides a navigational sidebar for easy access to different sections of the app.
+
+__fileupload.py
+
+Enables file uploading for assignments or educational materials.
+
+azsqldb.py
+
+Handles interactions with Azure SQL Database for data storage and retrieval.
+
+sessionvars.py
+
+Manages session variables for maintaining state across the application.
+
+Deployment
+
+Run streamlit run login.py to deploy the app locally. For more information on Streamlit, visit Streamlit's documentation.
+
+Built With
+
+Streamlit - The framework used to build the app.
+License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details.
