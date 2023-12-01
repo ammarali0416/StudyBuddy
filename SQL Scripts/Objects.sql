@@ -34,3 +34,11 @@ CREATE TABLE STUDYBUDDY.FAQs (
     CONSTRAINT FK_FAQs_Class FOREIGN KEY (class_id) REFERENCES master.STUDYBUDDY.Classes(class_id),
     CONSTRAINT FK_FAQs_User FOREIGN KEY (user_id) REFERENCES STUDYBUDDY.Users(user_id)
 );
+
+CREATE TABLE master.STUDYBUDDY.Modules (
+    module_id int IDENTITY(1,1) NOT NULL,
+    module_name nvarchar(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    class_id int NOT NULL,
+    CONSTRAINT PK__Modules__ModuleID PRIMARY KEY (module_id),
+    CONSTRAINT FK_ClassModule FOREIGN KEY (class_id) REFERENCES master.STUDYBUDDY.Classes(class_id)
+);
