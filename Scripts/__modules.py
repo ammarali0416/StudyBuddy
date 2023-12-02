@@ -25,7 +25,7 @@ def show_module():
 
     if module_data:
         # Select box for choosing the module
-        selected_module_name = st.selectbox("Select module:", list(module_data.keys()), index=list(module_data.keys()).index(st.session_state.selected_module_name) if st.session_state.selected_module_name in module_data else 0)
+        selected_module_name = st.selectbox("Select module:", list(module_data.keys()), index=list(module_data.keys()).index(st.session_state.selected_module_name) if st.session_state.selected_module_name in module_data else 0,label_visibility='hidden')
         st.session_state.selected_module_name = selected_module_name
         # Save the module info for the selected module
         if selected_module_name:
@@ -37,10 +37,12 @@ def show_module():
 def create_new_module():
     # Input field and button for new module creation
     new_module_name = st.text_input("Enter the name for the new module")
+    new_module_learning_outcomes = st.text_area("Enter the learning outcomes for the new class", "Enter the learning outcomes for the new class", label_visibility='hidden')
+
     if st.button("Submit New Module"):
-        if new_module_name:
+        if new_module_name and new_module_learning_outcomes:
             # Call the function to add a new module to the database
-            azsqldb.new_module(st.session_state.class_info['class_id'], new_module_name, st.session_state.sqlcursor)
+            azsqldb.new_module(st.session_state.class_info['class_id'], new_module_name, new_module_learning_outcomes, st.session_state.sqlcursor)
             
             # Optionally, fetch the updated module data to refresh the page or to show the updated list
             # module_data = fetch_module_data()
@@ -51,6 +53,9 @@ def create_new_module():
             st.session_state.selected_module_name = new_module_name  # Update the selected class name
             st.session_state.new_module_toggle = False  # Hide the input fields after submission
             st.experimental_rerun()  # Rerun the script to reflect the changes
+        else:
+            st.warning('Both module name and learning outcomes must be populated.')
+
 
 def delete_module():
     # Fetch module data for the selected class

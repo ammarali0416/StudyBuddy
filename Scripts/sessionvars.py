@@ -72,11 +72,11 @@ def initialize_session_vars():
         
     # Initialize the upload counter in session state
     if 'upload_key' not in st.session_state:
-        st.session_state.upload_key = str(randint(1000, 1000000))
+        st.session_state.upload_key = str(randint(0, 1000000))
     
         # Initialize the upload counter in session state
     if 'upload_key_2' not in st.session_state:
-        st.session_state.upload_key_2 = str(randint(1000, 1000000))
+        st.session_state.upload_key_2 = str(randint(1000001, 10000000))
 
     ####
     # Module vars

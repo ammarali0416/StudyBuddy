@@ -28,7 +28,7 @@ def teacher_sidebar():
                 - **Upload Files**: Upload class materials, assignments, and other resources. 📚
             """)
         ## Class management
-        st.sidebar.title("Manage Classes")
+        st.sidebar.title("Class")
         cm.show_class()
 
         col1, col2 = st.columns([1,1])
@@ -54,32 +54,44 @@ def teacher_sidebar():
         if st.session_state.show_upload_file:
             fu.upload_class_file()
 
-        #### Module management
+        ####################################
+        #  Module management
         st.sidebar.title("Modules")
         md.show_module()
 
-        col3, col4 = st.columns([1,1])
+        col3, col4, col5 = st.columns([1,1,1])
         
         with col3:
             if st.button("Create a new module"):
                 st.session_state.new_module_toggle = not st.session_state.new_module_toggle
+                st.session_state.delete_module_toggle = False
+                st.session_state.show_upload_file2 = False
+    
         with col4:  
             if st.button("Delete a module"):
                 st.session_state.delete_module_toggle = not st.session_state.delete_module_toggle
+                st.session_state.new_module_toggle = False
+                st.session_state.show_upload_file2 = False
+
+        with col5:
+            if st.button("Upload File", key='module_upload'):
+                st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
+                st.session_state.new_module_toggle = False
+                st.session_state.delete_module_toggle = False
 
         if st.session_state.new_module_toggle:
             md.create_new_module()
         
-        if st.session_state.delete_module_toggle:    
+        if st.session_state.delete_module_toggle:
             md.delete_module()
+        
+        if st.session_state.show_upload_file2:
+            fu.upload_module_file()
 
+        ####################################
         ### Faq functions
         st.sidebar.title("FAQs")
         fq.teacher_faqs()
-
-        #file upload
-        st.sidebar.title("Upload Files")
-        fu.upload_module_file()
 
         #schedule
         st.sidebar.title("Manage Assignments")
@@ -104,13 +116,22 @@ def student_sidebar():
 
         if st.session_state.show_join_class_input:
             cm.join_class()
+        
+
+        ################################
+        # Modules
+        st.sidebar.title("Modules")
+        md.show_module()
+
+        if st.button("Upload File", key='module_upload'):
+            st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
+
+        if st.session_state.show_upload_file2:
+            fu.upload_module_file()
 
         st.sidebar.title("FAQs")
         fq.student_faqs()
-
-        #file upload
-        st.sidebar.title("Upload Files")
-        fu.upload_module_file()
+        
 
         #schedule
         st.sidebar.title("Upcoming Assignments")

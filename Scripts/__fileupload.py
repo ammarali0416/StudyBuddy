@@ -16,7 +16,7 @@ sessionvars.initialize_session_vars()
 if st.session_state.user_info['role'] == 'teacher':
     help_text = 'Upload your class materials here!'
 else:
-    help_text = 'Upload your notes here!'
+    help_text = 'Any files, like notes or outlines'
 
 def upload_class_file():
     files = st.file_uploader("Upload files relevant to the class as a whole ie syllabus, schedule, etc",
@@ -35,28 +35,28 @@ def upload_class_file():
                     azb.upload_file_to_blob(file_stream, blob_name)
                 
             # Reset the file uploader widget
-            st.session_state.upload_key = str(randint(1000, 1000000))
+            st.session_state.upload_key = str(randint(0, 1000000))
+            st.rerun()
 
 def upload_module_file():
-    if st.button("Upload File"):
-        st.session_state.show_upload_file2 = not st.session_state.show_upload_file2 
-
-    if st.session_state.show_upload_file2:
-
-        files = st.file_uploader("Upload files relevant to the lesson",
-                         accept_multiple_files=True,
-                         help=help_text,
-                         key = st.session_state.upload_key_2) 
-        if st.button("Submit"):
-            # Display a warning if the user hasn't uploaded a file
-            if not files:                 
-                st.warning("Please upload a file first!")
-            else:
-                with st.spinner("Uploading your files..."):
-                    for file in files:
-                        file_stream = BytesIO(file.getvalue())
-                        blob_name = st.session_state.class_info['class_name'] + '/' + file.name
-                        azb.upload_file_to_blob(file_stream, blob_name)
-                    
-                # Reset the file uploader widget
-                st.session_state.upload_key_2 = str(randint(1000, 1000000))
+    files = st.file_uploader("Upload files your files for this module",
+                        accept_multiple_files=True,
+                        help=help_text,
+                        key = "fufuf" + st.session_state.upload_key_2) 
+    if st.button("Submit"):
+        # Display a warning if the user hasn't uploaded a file
+        if not files:                 
+            st.warning("Please upload a file first!")
+        else:
+            with st.spinner("Uploading your files..."):
+                for file in files:
+                    file_stream = BytesIO(file.getvalue())
+                    if st.session_state.user_info['role'] == 'teacher': 
+                        blob_name = st.session_state.class_info['class_name'] + '/' + st.session_state.selected_module_name + '/' + file.name
+                    else:
+                        blob_name = st.session_state.class_info['class_name'] + '/' + st.session_state.selected_module_name + '/STUDENT_NOTES/' + st.session_state.user_info['username'] + '/' + file.name
+                    azb.upload_file_to_blob(file_stream, blob_name)
+                
+            # Reset the file uploader widget
+            st.session_state.upload_key_2 = str(randint(1000001, 10000000))
+            st.rerun()

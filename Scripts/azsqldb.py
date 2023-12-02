@@ -138,7 +138,7 @@ def get_classes(user_id, role, sqlcursor):
   }
 # classes["Anam's Class"]['class_id'] would return 1]"""
 
-def new_class(user_id, sqlcursor, class_name):
+def new_class(user_id, sqlcursor, class_name, learnig_outcomes):
     """
     Create a new class
     """
@@ -146,7 +146,7 @@ def new_class(user_id, sqlcursor, class_name):
     class_code = ''.join(random.choices('0123456789ABCDEF', k=6))
 
     # Execute a SQL query to insert the new class
-    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id) VALUES (?, ?, ?)", (class_name, class_code, user_id))
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id, LearningOutcomes) VALUES (?, ?, ?, ?)", (class_name, class_code, user_id, learnig_outcomes))
     # Commit the transaction
     sqlcursor.connection.commit()
 
@@ -315,15 +315,15 @@ def get_modules(class_id, sqlcursor):
     
     return module_info_mapping
 
-def new_module(class_id, module_name, sqlcursor):
+def new_module(class_id, module_name, learning_outcome, sqlcursor):
     """
     Create a new module for a specific class.
     """
     # Execute a SQL query to insert the new module
     sqlcursor.execute("""
-        INSERT INTO master.STUDYBUDDY.Modules (class_id, module_name) 
-        VALUES (?, ?)
-    """, (class_id, module_name))
+        INSERT INTO master.STUDYBUDDY.Modules (class_id, module_name, LearningOutcomes) 
+        VALUES (?, ?, ?)
+    """, (class_id, module_name, learning_outcome))
     # Commit the transaction
     sqlcursor.connection.commit()
 
