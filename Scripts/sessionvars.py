@@ -15,6 +15,7 @@ Initialize session variables for the app
 
 import streamlit as st
 from Scripts import azsqldb
+from random import randint
 
 def initialize_session_vars():
     '''
@@ -65,3 +66,32 @@ def initialize_session_vars():
     # upload file vars
     if 'show_upload_file' not in st.session_state:
         st.session_state.show_upload_file = False
+    
+    if 'show_upload_file2' not in st.session_state:
+        st.session_state.show_upload_file2 = False
+        
+    # Initialize the upload counter in session state
+    if 'upload_key' not in st.session_state:
+        st.session_state.upload_key = str(randint(0, 1000000))
+    
+        # Initialize the upload counter in session state
+    if 'upload_key_2' not in st.session_state:
+        st.session_state.upload_key_2 = str(randint(1000001, 10000000))
+
+    ####
+    # Module vars
+        # Store the selected class so the dashboard remains the same after navigating to other pages
+    if 'selected_module_name' not in st.session_state:
+        st.session_state.selected_module_name = None
+    # New module toggle (teacher)
+    if 'new_module_toggle' not in st.session_state:
+        st.session_state.new_module_toggle = False
+    # Delete module toggle (teacher)
+    if 'delete_module_toggle' not in st.session_state:
+        st.session_state.delete_module_toggle = False
+    # Store module information
+    if "module_info" not in st.session_state:
+        st.session_state.module_info = {
+            'module_id': None,
+            'module_name': None
+        }

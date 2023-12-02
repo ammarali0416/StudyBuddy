@@ -14,19 +14,11 @@
     This file contains the sidebar for the dashboard page
 '''
 import streamlit as st
-from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc
+from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc, __classmanager as cm, __modules as md
 
 sessionvars.initialize_session_vars()
 
-def fetch_class_data():
-    return azsqldb.get_classes(st.session_state.user_info['user_id'],
-                                st.session_state.user_info['role'],
-                                st.session_state.sqlcursor)
-
-def teacher_sidebar():
-    # Fetch class data
-    class_data = fetch_class_data()
-   
+def teacher_sidebar():   
     # Sidebar for class selection and new class creation
     with st.sidebar:
         st.write("""
@@ -36,54 +28,77 @@ def teacher_sidebar():
                 - **Upload Files**: Upload class materials, assignments, and other resources. 📚
             """)
         ## Class management
-        st.sidebar.title("Manage Classes")
-        if class_data:
-            # Select box for choosing the class
-            selected_class_name = st.selectbox("Select class:", list(class_data.keys()), index=list(class_data.keys()).index(st.session_state.selected_class_name) if st.session_state.selected_class_name in class_data else 0)
-            st.session_state.selected_class_name = selected_class_name
-            # Display the class code for the selected class
-            if selected_class_name:
-                selected_class_info = class_data[selected_class_name]
-                st.session_state.class_info = selected_class_info
-                st.write(f"Class Code: {selected_class_info['class_code']}")
-        else:
-            st.selectbox("Select class:", ["No classes available"])
-            st.write("You haven't created any classes yet.")
+        st.sidebar.title("Class")
+        cm.show_class()
 
-        # Button to create a new class
-        if st.button("Create a new class"):
-            st.session_state.show_new_class_input = not st.session_state.show_new_class_input
+        col1, col2 = st.columns([1,1])
 
-        if st.session_state.show_new_class_input:
-            # Input field and button for new class creation
-            if st.session_state.show_new_class_input:
-                new_class_name = st.text_input("Enter the name for the new class")
-                if st.button("Submit New Class"):
-                    if new_class_name:
-                        azsqldb.new_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_name)
-                        class_data = fetch_class_data()  # Refresh the class data
-                        st.session_state.selected_class_name = new_class_name  # Update the selected class name
-                        st.session_state.show_new_class_input = False  # Hide the input fields after submission
-                        st.experimental_rerun()  # Rerun the script to reflect the changes
+        with col1:
+            # Button to create a new class
+            if st.button("Create a new class"):
+                st.session_state.show_new_class_input = not st.session_state.show_new_class_input
+                st.session_state.show_upload_file = False
+
+        with col2:
+            # Button to upload class level files
+            if st.button("Upload File", key='class_upload'):
+                st.session_state.show_upload_file = not st.session_state.show_upload_file ## Upload class files
+                st.session_state.show_new_class_input = False
+
         
+        # Block to create a new class
+        if st.session_state.show_new_class_input:
+            cm.create_new_class()
+
+        # Block to upload class level files
+        if st.session_state.show_upload_file:
+            fu.upload_class_file()
+
+        ####################################
+        #  Module management
+        st.sidebar.title("Modules")
+        md.show_module()
+
+        col3, col4, col5 = st.columns([1,1,1])
+        
+        with col3:
+            if st.button("Create a new module"):
+                st.session_state.new_module_toggle = not st.session_state.new_module_toggle
+                st.session_state.delete_module_toggle = False
+                st.session_state.show_upload_file2 = False
+    
+        with col4:  
+            if st.button("Delete a module"):
+                st.session_state.delete_module_toggle = not st.session_state.delete_module_toggle
+                st.session_state.new_module_toggle = False
+                st.session_state.show_upload_file2 = False
+
+        with col5:
+            if st.button("Upload File", key='module_upload'):
+                st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
+                st.session_state.new_module_toggle = False
+                st.session_state.delete_module_toggle = False
+
+        if st.session_state.new_module_toggle:
+            md.create_new_module()
+        
+        if st.session_state.delete_module_toggle:
+            md.delete_module()
+        
+        if st.session_state.show_upload_file2:
+            fu.upload_module_file()
+
+        ####################################
         ### Faq functions
         st.sidebar.title("FAQs")
         fq.teacher_faqs()
-
-        #file upload
-        st.sidebar.title("Upload Files")
-        fu.upload_file()
 
         #schedule
         st.sidebar.title("Manage Assignments")
         sc.teacher_schedule()
 
-        
-
 
 def student_sidebar():
-    # Fetch class data
-    class_data = fetch_class_data()
     # Sidebar for class selection and new class joining
     with st.sidebar:
         st.write("""
@@ -93,43 +108,30 @@ def student_sidebar():
                 - **Upload Files**: Upload your notes, outlines, etc. 📚
             """)
         st.sidebar.title("Manage Classes")
-        if class_data:
-            # Select box for choosing the class
-            selected_class_name = st.selectbox("Select class:", list(class_data.keys()), index=list(class_data.keys()).index(st.session_state.selected_class_name) if st.session_state.selected_class_name in class_data else 0)
-            st.session_state.selected_class_name = selected_class_name
-            # Display the class info for the selected class
-            if selected_class_name:
-                selected_class_info = class_data[selected_class_name]
-                st.session_state.class_info = selected_class_info
-        else:
-            st.selectbox("Select class:", ["No classes available"])
-            st.write("You are not enrolled in any classes yet.")
+        cm.show_class()
+
         # Button to join a new class
         if st.button("Join a new class"):
             st.session_state.show_join_class_input = not st.session_state.show_join_class_input
 
         if st.session_state.show_join_class_input:
-            # Input field and button for joining a new class
-            if st.session_state.show_join_class_input:
-                new_class_code = st.text_input("Enter the class code")
-                join_class_button = st.button("Join Class")
-                # Block to handle form submission
-                if join_class_button and new_class_code:
-                    join_message = azsqldb.join_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_code)
-                    st.warning(join_message)
-                    # Handle the a successful class join
-                    if join_message == "You have successfully joined the class!":
-                        class_data = fetch_class_data()  # Refresh the class data
-                        st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
-                        st.experimental_rerun()  # Rerun the script to reflect the changes
+            cm.join_class()
+        
 
+        ################################
+        # Modules
+        st.sidebar.title("Modules")
+        md.show_module()
+
+        if st.button("Upload File", key='module_upload'):
+            st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
+
+        if st.session_state.show_upload_file2:
+            fu.upload_module_file()
 
         st.sidebar.title("FAQs")
         fq.student_faqs()
-
-        #file upload
-        st.sidebar.title("Upload Files")
-        fu.upload_file()
+        
 
         #schedule
         st.sidebar.title("Upcoming Assignments")

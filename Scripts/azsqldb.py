@@ -138,7 +138,7 @@ def get_classes(user_id, role, sqlcursor):
   }
 # classes["Anam's Class"]['class_id'] would return 1]"""
 
-def new_class(user_id, sqlcursor, class_name):
+def new_class(user_id, sqlcursor, class_name, learnig_outcomes):
     """
     Create a new class
     """
@@ -146,7 +146,7 @@ def new_class(user_id, sqlcursor, class_name):
     class_code = ''.join(random.choices('0123456789ABCDEF', k=6))
 
     # Execute a SQL query to insert the new class
-    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id) VALUES (?, ?, ?)", (class_name, class_code, user_id))
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id, LearningOutcomes) VALUES (?, ?, ?, ?)", (class_name, class_code, user_id, learnig_outcomes))
     # Commit the transaction
     sqlcursor.connection.commit()
 
@@ -293,4 +293,48 @@ def update_class(sqlcursor, class_id, field, new_value):
     sqlcursor.execute(update_query, new_value, class_id)
 
     # Commit the changes
+    sqlcursor.connection.commit()
+
+def get_modules(class_id, sqlcursor):
+    """
+    Get all the modules associated with a particular class
+    Returns a dictionary mapping module names to their module IDs
+    """
+    # Execute SQL query to get all modules for the provided class_id
+    sqlcursor.execute("""
+        SELECT module_id, module_name
+        FROM master.STUDYBUDDY.Modules
+        WHERE class_id = ?
+    """, (class_id,))
+    
+    # Fetch all records from the query
+    module_records = sqlcursor.fetchall()
+    
+    # Create a dictionary mapping module names to their IDs
+    module_info_mapping = {record[1]: record[0] for record in module_records}
+    
+    return module_info_mapping
+
+def new_module(class_id, module_name, learning_outcome, sqlcursor):
+    """
+    Create a new module for a specific class.
+    """
+    # Execute a SQL query to insert the new module
+    sqlcursor.execute("""
+        INSERT INTO master.STUDYBUDDY.Modules (class_id, module_name, LearningOutcomes) 
+        VALUES (?, ?, ?)
+    """, (class_id, module_name, learning_outcome))
+    # Commit the transaction
+    sqlcursor.connection.commit()
+
+def delete_module(module_id, sqlcursor):
+    """
+    Delete a module from the database.
+    """
+    # Execute a SQL query to delete the module
+    sqlcursor.execute("""
+        DELETE FROM master.STUDYBUDDY.Modules
+        WHERE module_id = ?
+    """, (module_id,))
+    # Commit the transaction
     sqlcursor.connection.commit()
