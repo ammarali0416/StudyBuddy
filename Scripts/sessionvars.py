@@ -95,3 +95,10 @@ def initialize_session_vars():
             'module_id': None,
             'module_name': None
         }
+    # Store the selected modules for chatting
+    if 'selected_modules' not in st.session_state:
+        st.session_state.selected_modules = []  
+    
+    #### chat screen vars
+    if 'context_selection_toggle' not in st.session_state:
+        st.session_state.context_selection_toggle = True

@@ -1,4 +1,4 @@
-from Scripts import azsqldb, sessionvars, __login as lg, __sidebar as sb
+from Scripts import azsqldb, sessionvars, __login as lg, __sidebar as sb, __chatscreen as cs
 import streamlit as st
 from markdownlit import mdlit
 
@@ -29,11 +29,19 @@ if not st.session_state.user_info['user_id']:
 
 
 # If the user is logged in, display the chat screen
-if st.session_state.user_info['user_id']:
-    st.markdown(mdlit("""This is where the chat screen will be displayed."""))
-    
+if st.session_state.user_info['user_id']:    
     # Display the teacher sidebar
     if st.session_state.user_info['role'] == 'teacher':
         sb.teacher_sidebar()  
     else:
         sb.student_sidebar()
+    
+    # Display the chat screen
+    if st.session_state.context_selection_toggle:
+        cs.context_selection()
+    
+    # Show the select modules
+    if st.session_state.selected_modules not in [None, []]:
+        st.write(f"Chatting about: {st.session_state.selected_modules}")
+
+
