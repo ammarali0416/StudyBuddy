@@ -19,10 +19,11 @@ else:
     help_text = 'Any files, like notes or outlines'
 
 def upload_class_file():
-    files = st.file_uploader("Upload files relevant to the class as a whole ie syllabus, schedule, etc",
-                        accept_multiple_files=True,
-                        help=help_text,
-                        key = st.session_state.upload_key) 
+    files = st.file_uploader("Upload files relevant to the class as a whole ie syllabus, schedule, etc", 
+                             type=['docx', 'pdf', 'txt', 'pptx', 'c', 'cpp', 'csv', 'html', 'java', 'json', 'md', 'php', 'py', 'tex'], 
+                             accept_multiple_files=True, 
+                             help=help_text, 
+                             key=st.session_state.upload_key)
     if st.button("Submit", key='class_upload_submit'):
         # Display a warning if the user hasn't uploaded a file
         if not files:                 
@@ -39,10 +40,11 @@ def upload_class_file():
             st.rerun()
 
 def upload_module_file():
-    files = st.file_uploader("Upload files your files for this module",
-                        accept_multiple_files=True,
-                        help=help_text,
-                        key = "fufuf" + st.session_state.upload_key_2) 
+    files = st.file_uploader("Upload files your files for this module", 
+                             type=['docx', 'pdf', 'txt', 'pptx', 'c', 'cpp', 'csv', 'html', 'java', 'json', 'md', 'php', 'py', 'tex'], 
+                             accept_multiple_files=True, 
+                             help=help_text, 
+                             key="fufuf" + st.session_state.upload_key_2)
     if st.button("Submit"):
         # Display a warning if the user hasn't uploaded a file
         if not files:                 
