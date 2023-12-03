@@ -7,8 +7,14 @@ from Scripts import azblob as azb
 import streamlit as st
 from markdownlit import mdlit
 import pandas as pd
+import os 
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 sessionvars.initialize_session_vars()
+
+cs.delete_files_from_openai()
 
 custom_width = 250
 
@@ -56,8 +62,13 @@ if st.session_state.user_info['user_id']:
         azb.get_class_and_module_files('BUS5000')
         st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules + ['CLASS_LEVEL'])]
         #########################
-        st.dataframe(st.session_state.blobs_to_retrieve)
-        st.write(cs.upload_files_ai(st.session_state.blobs_to_retrieve['full_path']))
+        #st.dataframe(st.session_state.blobs_to_retrieve)
+        st.session_state.openai_fileids = cs.upload_files_ai(st.session_state.blobs_to_retrieve['full_path'])
+
+        st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.update(
+            assistant_id = os.getenv("OPENAI_ASSISTANT"),
+            file_ids = st.session_state.openai_fileids
+        )
 
 
 

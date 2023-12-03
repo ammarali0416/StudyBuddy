@@ -21,18 +21,11 @@ load_dotenv(find_dotenv())
 
 sessionvars.initialize_session_vars()
 
-# Function to convert FileObject to a serializable dictionary
-def file_object_to_dict(file_obj):
-    return {
-        'id': file_obj.id,
-        'bytes': file_obj.bytes,
-        'created_at': file_obj.created_at,
-        'filename': file_obj.filename,
-        'object': file_obj.object,
-        'purpose': file_obj.purpose,
-        'status': file_obj.status,
-        'status_details': file_obj.status_details
-    }
+def delete_files_from_openai():
+    files = st.session_state.ai_client.files.list()
+    for file in files:
+        file_id = file.id
+        st.session_state.ai_client.files.delete(file_id)
 
 def context_selection():
     """
@@ -136,13 +129,6 @@ def upload_files_ai(blob_paths):
 
         # Delete the file from the staging directory
         os.remove(staging_path)
-
-    # Convert each FileObject in the list to a dictionary
-    file_dicts = [file_object_to_dict(file_obj) for file_obj in uploaded_files]
-
-    # Save the list of dictionaries as a JSON list
-    with open(json_path, 'w') as json_file:
-        json.dump(file_dicts, json_file)
     
     # Return this list of file ids
     return [file_obj.id for file_obj in uploaded_files]
