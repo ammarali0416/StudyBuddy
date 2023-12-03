@@ -102,3 +102,9 @@ def initialize_session_vars():
     #### chat screen vars
     if 'context_selection_toggle' not in st.session_state:
         st.session_state.context_selection_toggle = True
+    
+    if 'blobs_df' not in st.session_state:
+        st.session_state.blobs_df = None
+    
+    if 'blobs_to_retrieve' not in st.session_state:
+        st.session_state.blobs_to_retrieve = None

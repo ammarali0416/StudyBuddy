@@ -1,6 +1,12 @@
-from Scripts import azsqldb, sessionvars, __login as lg, __sidebar as sb, __chatscreen as cs
+from Scripts import azsqldb
+from Scripts import sessionvars
+from Scripts import __login as lg
+from Scripts import __sidebar as sb
+from Scripts import __chatscreen as cs
+from Scripts import azblob as azb
 import streamlit as st
 from markdownlit import mdlit
+import pandas as pd
 
 sessionvars.initialize_session_vars()
 
@@ -43,5 +49,10 @@ if st.session_state.user_info['user_id']:
     # Show the select modules
     if st.session_state.selected_modules not in [None, []]:
         st.write(f"Chatting about: {st.session_state.selected_modules}")
+
+        azb.get_class_and_module_files('BUS5000')
+        st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules)]
+        #########################
+        #st.dataframe(st.session_state.blobs_to_retrieve)
 
 
