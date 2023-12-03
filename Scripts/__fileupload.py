@@ -58,5 +58,5 @@ def upload_module_file():
                     azb.upload_file_to_blob(file_stream, blob_name)
                 
             # Reset the file uploader widget
-            st.session_state.upload_key_2 = str(randint(1000001, 10000000))
-            st.rerun()
+                st.session_state.upload_key_2 = str(randint(1000001, 10000000))
+                st.rerun()

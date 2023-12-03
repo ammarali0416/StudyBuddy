@@ -338,3 +338,36 @@ def delete_module(module_id, sqlcursor):
     """, (module_id,))
     # Commit the transaction
     sqlcursor.connection.commit()
+
+def get_learning_outcomes(class_id, selected_modules, sqlcursor):
+    """
+    Get the learning outcomes for the selected modules.
+    Returns a dictionary mapping module names to their learning outcomes and class information.
+    """
+    # Execute a SQL query to get the learning outcomes for the selected modules
+    sqlcursor.execute("""
+        SELECT module_name, LearningOutcomes
+        FROM master.STUDYBUDDY.Modules
+        WHERE class_id = ?
+        AND module_name IN ({})
+    """.format(','.join('?' * len(selected_modules))), (class_id, *selected_modules))
+    # Fetch all records from the query
+    learning_outcome_records = sqlcursor.fetchall()
+    # Create a dictionary mapping module names to their learning outcomes
+    learning_outcomes = {}
+    for record in learning_outcome_records:
+        module_name = record[0]
+        learning_outcome = record[1]
+        learning_outcomes[module_name] = learning_outcome
+    
+    # Execute a SQL query to get the class information
+    sqlcursor.execute("""
+        SELECT class_name, LearningOutcomes
+        FROM master.STUDYBUDDY.Classes
+        WHERE class_id = ?
+    """, (class_id,))
+    # Fetch the record from the query
+    class_record = sqlcursor.fetchone()
+    class_learning_outcomes = class_record[1]
+    
+    return learning_outcomes, class_learning_outcomes
