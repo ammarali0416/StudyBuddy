@@ -46,13 +46,18 @@ if st.session_state.user_info['user_id']:
     if st.session_state.context_selection_toggle:
         cs.context_selection()
     
-    # Show the select modules
+    # blob runs only after context has been selected
     if st.session_state.selected_modules not in [None, []]:
-        st.write(f"Chatting about: {st.session_state.selected_modules}")
+        col4, col5 = st.columns([1,1])
 
+        col4.write(f"Chatting about: {st.session_state.selected_modules}")
+        col5.write(f"Current session: {st.session_state.session_id}")
+        
         azb.get_class_and_module_files('BUS5000')
         st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules + ['CLASS_LEVEL'])]
         #########################
-        st.dataframe(st.session_state.blobs_to_retrieve)
+        #st.dataframe(st.session_state.blobs_to_retrieve)
+
+        st.write(cs.initialize_chat())
 
 

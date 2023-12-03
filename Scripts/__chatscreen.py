@@ -10,7 +10,8 @@
 #                                                                              #
 # **************************************************************************** #
 import streamlit as st
-from Scripts import azsqldb, sessionvars
+import openai
+from Scripts import azsqldb, sessionvars, azblob as azb
 
 sessionvars.initialize_session_vars()
 
@@ -58,3 +59,24 @@ def context_selection():
                 st.session_state.selected_modules = selected_modules
                 st.session_state.context_selection_toggle = False
                 st.experimental_rerun()
+
+def initialize_chat():
+    module_learning_outcomes, class_learning_outcomes = azsqldb.get_learning_outcomes(
+                                                            st.session_state.class_info['class_id'], 
+                                                            st.session_state.selected_modules, 
+                                                            st.session_state.sqlcursor)
+
+    initial_prompt = f"""
+<INFO> INITIAL PROMPT </INFO>
+You're chatting with {st.session_state.user_info['username']}\n
+Their role is : {st.session_state.user_info['role']}\n
+The class is : {st.session_state.class_info['class_name']}\n
+The class learning outcomes are:\n {class_learning_outcomes}\n
+You are going to discuss the following modules:\n
+"""
+
+    for module, outcome in module_learning_outcomes.items():
+        initial_prompt += f" -Module: {module}\n\n"
+        initial_prompt += f" -Learning outcomes: {outcome}\n\n"
+
+    return initial_prompt

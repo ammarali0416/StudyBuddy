@@ -12,10 +12,16 @@
 """
 Initialize session variables for the app
 """
-
+from openai import OpenAI
 import streamlit as st
+import os
+from dotenv import load_dotenv, find_dotenv
 from Scripts import azsqldb
 from random import randint
+import uuid
+
+
+load_dotenv(find_dotenv())
 
 def initialize_session_vars():
     '''
@@ -108,3 +114,22 @@ def initialize_session_vars():
     
     if 'blobs_to_retrieve' not in st.session_state:
         st.session_state.blobs_to_retrieve = None
+    
+    if 'ai_client' not in st.session_state:
+        st.session_state.ai_client = OpenAI(
+            api_key = os.getenv("OPENAI_API_KEY")
+        )
+    if "session_id" not in st.session_state: # Used to identify each session
+        st.session_state.session_id = str(uuid.uuid4())
+
+    if "run" not in st.session_state: # Stores the run state of the assistant
+        st.session_state.run = {"status": None}
+
+    if "messages" not in st.session_state: # Stores the messages of the assistant
+        st.session_state.messages = []
+
+    if "retry_error" not in st.session_state: # Used for error handling
+        st.session_state.retry_error = 0
+
+    if 'studybuddy' not in st.session_state: # Used to store the studybuddy object
+        st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.retrieve(os.getenv("OPENAI_ASSISTANT"))

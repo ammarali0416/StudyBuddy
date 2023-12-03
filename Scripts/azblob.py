@@ -47,6 +47,9 @@ def upload_file_to_blob(file, blob_name):
 
 
 def get_class_and_module_files(class_name):
+    '''
+    Outputs a function that returns a dataframe of all files in the class and module folders
+    '''
     # Retrieve environment variables
     connection_string = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
     container_name = os.getenv("AZURE_CONTAINER")
