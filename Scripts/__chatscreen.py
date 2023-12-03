@@ -22,10 +22,19 @@ load_dotenv(find_dotenv())
 sessionvars.initialize_session_vars()
 
 def delete_files_from_openai():
-    files = st.session_state.ai_client.files.list()
+    files = st.session_state.ai_client.beta.assistants.files.list(
+        assistant_id=os.getenv("OPENAI_ASSISTANT")
+    )
+
+    if not files:  # Check if files list is empty
+            return
+
+
     for file in files:
         file_id = file.id
-        st.session_state.ai_client.files.delete(file_id)
+        st.session_state.ai_client.beta.assistants.files.delete(
+            assistant_id=os.getenv("OPENAI_ASSISTANT"),
+            file_id=file_id)
 
 def context_selection():
     """
