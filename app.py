@@ -51,8 +51,8 @@ if st.session_state.user_info['user_id']:
         st.write(f"Chatting about: {st.session_state.selected_modules}")
 
         azb.get_class_and_module_files('BUS5000')
-        st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules)]
+        st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules + ['CLASS_LEVEL'])]
         #########################
-        #st.dataframe(st.session_state.blobs_to_retrieve)
+        st.dataframe(st.session_state.blobs_to_retrieve)
 
 

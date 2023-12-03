@@ -74,6 +74,9 @@ def get_class_and_module_files(class_name):
         parts = path.split('/')
         module_name = parts[1] if len(parts) > 1 and "." not in parts[1] else None
         student_name = parts[3] if len(parts) > 3 and "STUDENT_NOTES" in parts else None
+        if len(parts) > 1 and "." in parts[1]:
+            module_name = "CLASS_LEVEL"
         df = pd.concat([df, pd.DataFrame({'full_path': path, 'module_name': module_name, 'student_name': student_name}, index=[0])], ignore_index=True)
-    
+    ## when a fileis a the class level make the module name CLASS_LEVEL
+    ## filter the data fram checking the blob path for two 
     st.session_state.blobs_df = df
