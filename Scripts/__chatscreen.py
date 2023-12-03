@@ -10,10 +10,29 @@
 #                                                                              #
 # **************************************************************************** #
 import streamlit as st
+import os
 import openai
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from Scripts import azsqldb, sessionvars, azblob as azb
+import json
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 sessionvars.initialize_session_vars()
+
+# Function to convert FileObject to a serializable dictionary
+def file_object_to_dict(file_obj):
+    return {
+        'id': file_obj.id,
+        'bytes': file_obj.bytes,
+        'created_at': file_obj.created_at,
+        'filename': file_obj.filename,
+        'object': file_obj.object,
+        'purpose': file_obj.purpose,
+        'status': file_obj.status,
+        'status_details': file_obj.status_details
+    }
 
 def context_selection():
     """
@@ -80,3 +99,50 @@ You are going to discuss the following modules:\n
         initial_prompt += f" -Learning outcomes: {outcome}\n\n"
 
     return initial_prompt
+
+
+def upload_files_ai(blob_paths):
+    blob_service_client = BlobServiceClient.from_connection_string(os.getenv("AZURE_STORAGE_CONNECTION_STRING"))
+    container_client = blob_service_client.get_container_client(os.getenv("AZURE_CONTAINER"))
+    client = st.session_state.ai_client
+
+    # Base directory (assuming this script is in the /scripts subdirectory)
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+    # Paths
+    staging_dir = os.path.join(base_dir, 'staging')
+    json_path = os.path.join(base_dir, '.bin', 'files.json')
+
+    # Ensure directories exist
+    os.makedirs(staging_dir, exist_ok=True)
+    os.makedirs(os.path.dirname(json_path), exist_ok=True)
+    
+    # List to store file objects
+    uploaded_files = []
+
+    for blob_path in blob_paths:
+        # Adjust the path to save in the staging directory
+        staging_path = os.path.join(staging_dir, os.path.basename(blob_path))
+
+        # Download the file from Azure Blob
+        blob_client = container_client.get_blob_client(blob_path)
+        with open(staging_path, "wb") as download_file:
+            download_file.write(blob_client.download_blob().readall())
+
+        # Upload the file to OpenAI
+        with open(staging_path, "rb") as file:
+            response = client.files.create(file=file, purpose="assistants")
+            uploaded_files.append(response)
+
+        # Delete the file from the staging directory
+        os.remove(staging_path)
+
+    # Convert each FileObject in the list to a dictionary
+    file_dicts = [file_object_to_dict(file_obj) for file_obj in uploaded_files]
+
+    # Save the list of dictionaries as a JSON list
+    with open(json_path, 'w') as json_file:
+        json.dump(file_dicts, json_file)
+    
+    # Return this list of file ids
+    return [file_obj.id for file_obj in uploaded_files]

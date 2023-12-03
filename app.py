@@ -56,8 +56,8 @@ if st.session_state.user_info['user_id']:
         azb.get_class_and_module_files('BUS5000')
         st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules + ['CLASS_LEVEL'])]
         #########################
-        #st.dataframe(st.session_state.blobs_to_retrieve)
+        st.dataframe(st.session_state.blobs_to_retrieve)
+        st.write(cs.upload_files_ai(st.session_state.blobs_to_retrieve['full_path']))
 
-        st.write(cs.initialize_chat())
 
 
