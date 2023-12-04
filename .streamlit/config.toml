@@ -1,6 +1,22 @@
 [theme]
+# Colors for the StudyBuddy App based on HEX values
 primaryColor = "#1E81B0"
 backgroundColor = "#ffd878"
 secondaryBackgroundColor = "#ffbb01"
 textColor = "#015D8B"
 font = "sans serif"
+
+[browser]
+# Hide the Streamlit footer
+hide_streamlit_logo = true
+
+[deprecation]
+# Disable the hamburger menu items
+menuItems = {
+    # Set to false to remove "Get help"
+    getHelp = false
+    # Set to false to remove "Report a bug"
+    reportABug = false
+    # Set to false to remove "About"
+    about = false
+}
