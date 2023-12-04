@@ -22,35 +22,50 @@ load_dotenv(find_dotenv())
 sessionvars.initialize_session_vars()
 
 def delete_files_from_openai():
-    files = st.session_state.ai_client.files.list()
-    # Check if there are no files
-    if not files.data:
-        pass # End the function if there are no files
+    total_files = 0
+    progress_value = 0
 
-    # If there are files, proceed with deletion
-    for file in files.data:
-        file_id = file.id
-        st.session_state.ai_client.files.delete(
-            file_id=file_id
-        )    
-        print(f"Deleted file {file_id}")
-    
-    files = st.session_state.ai_client.beta.assistants.files.list(
+    # First list of files
+    files = st.session_state.ai_client.files.list()
+    total_files += len(files.data) if files.data else 0
+
+    # Second list of files
+    assistant_files = st.session_state.ai_client.beta.assistants.files.list(
         assistant_id=os.getenv("OPENAI_ASSISTANT")
     )
+    total_files += len(assistant_files.data) if assistant_files.data else 0
 
-    # Check if there are no files
-    if not files.data:
-        pass
+    # Create a progress bar
+    progress_bar = st.progress(0, text='Getting ready to study :)!')
 
-    # If there are files, proceed with deletion
+    # Function to update progress
+    def update_progress():
+        nonlocal progress_value
+        progress_value += 1
+        progress_bar.progress(progress_value / total_files)
+
+    # Delete files from the first list
     for file in files.data:
+        file_id = file.id
+        st.session_state.ai_client.files.delete(file_id=file_id)
+        print(f"Deleted file {file_id}")
+        update_progress()
+
+    # Delete files from the second list
+    for file in assistant_files.data:
         file_id = file.id
         st.session_state.ai_client.beta.assistants.files.delete(
             assistant_id=os.getenv("OPENAI_ASSISTANT"),
             file_id=file_id
         )
         print(f"Deleted file {file_id}")
+        update_progress()
+
+    # Complete the progress bar if there were no files
+    if total_files == 0:
+        progress_bar.progress(1)
+        progress_bar.empty()
+
 
 
 def context_selection():
@@ -116,6 +131,8 @@ You are going to discuss the following modules:\n
     for module, outcome in module_learning_outcomes.items():
         initial_prompt += f" -Module: {module}\n\n"
         initial_prompt += f" -Learning outcomes: {outcome}\n\n"
+
+    initial_prompt += f"Here is info on the files you recieved:\n\n{st.session_state.blobs_to_retrieve}"
 
     return initial_prompt
 

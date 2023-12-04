@@ -15,10 +15,6 @@ load_dotenv(find_dotenv())
 
 sessionvars.initialize_session_vars()
 
-print("TOP OF SCRIPT+++++++++++++++++++++++++++++++++++++++++++++++")
-if hasattr(st.session_state.run, 'id'):
-    print(f"Current run id: {st.session_state.run.id}")
-    print(f"Current run status: {st.session_state.run.status}")
 
 if st.session_state.cleanup == False:
     print("Cleaning up files from OpenAI")
@@ -82,7 +78,10 @@ if st.session_state.user_info['user_id']:
         # Initialize the assistant
         if "studybuddy" not in st.session_state:
             st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.retrieve(os.getenv('OPENAI_ASSISTANT'))
-
+            st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.update(
+                assistant_id=st.session_state.studybuddy.id,
+                file_ids=st.session_state.openai_fileids
+            )
             # Create a new thread for this session
             st.session_state.thread = st.session_state.ai_client.beta.threads.create(
                 metadata={
@@ -122,12 +121,23 @@ if st.session_state.user_info['user_id']:
         # Display messages
             for message in reversed(st.session_state.messages.data):
                 if message.role in ["user", "assistant"]:
-                    with st.chat_message(message.role):
-                        for content_part in message.content:
-                            message_text = content_part.text.value
-                            st.markdown(message_text)
+                    for content_part in message.content:
+                        message_text = content_part.text.value
+                        # Check if the message contains the specified phrase
+                        if "<INFO> INITIAL PROMPT </INFO>" not in message_text:
+                            with st.chat_message(message.role):
+                                st.markdown(message_text)
+                        else:
+                            # Optionally, you can print a message to the console for debugging
+                            print("Skipped a message containing the initial prompt info.")
         
-        if prompt := st.chat_input("How can I help you?"):
+        if st.session_state.initialized == False:
+            prompt = cs.initialize_chat()
+            st.session_state.initialized = True
+        else:
+            prompt = st.chat_input("How can I help you?")
+
+        if prompt:
             with st.chat_message('user'):
                 st.write(prompt)
 
