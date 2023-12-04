@@ -64,6 +64,10 @@ Handles interactions with [Azure SQL Database](https://azure.microsoft.com/en-us
 #### `sessionvars.py`
 Manages session variables for maintaining state across the application.
 
+## Future Configuration
+
+In the upcoming updates, detailed steps on how to configure the OpenAI Assistant for StudyBuddy will be provided. This will include guidance on setting up the assistant, customizing its behavior to suit the educational context, and integrating it seamlessly with other components of the app. Stay tuned for these enhancements to maximize the capabilities of StudyBuddy.
+
 ## Deployment
 
 Run `streamlit run login.py` to deploy the app locally. For more information on Streamlit, visit [Streamlit's documentation](https://docs.streamlit.io).
@@ -75,4 +79,3 @@ Run `streamlit run login.py` to deploy the app locally. For more information on 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
