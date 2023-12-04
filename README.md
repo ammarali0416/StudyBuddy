@@ -68,6 +68,12 @@ Manages session variables for maintaining state across the application.
 
 In the upcoming updates, detailed steps on how to configure the OpenAI Assistant for StudyBuddy will be provided. This will include guidance on setting up the assistant, customizing its behavior to suit the educational context, and integrating it seamlessly with other components of the app. Stay tuned for these enhancements to maximize the capabilities of StudyBuddy.
 
+### Future deplyoments
+
+Current deployment is limited to one user funcationality at a time, with a future expansaion to increase the user limit. 
+
+We will also be using Azure OpenAI Bot Service and OpenAI ChatGPT endpoint instead of ChatGPT and OpenAI ChatGPT Assistant Endpoint.
+
 ## Deployment
 
 Run `streamlit run login.py` to deploy the app locally. For more information on Streamlit, visit [Streamlit's documentation](https://docs.streamlit.io).
