@@ -130,9 +130,15 @@ def initialize_session_vars():
 
     if "retry_error" not in st.session_state: # Used for error handling
         st.session_state.retry_error = 0
-
-    if 'studybuddy' not in st.session_state: # Used to store the studybuddy object
-        st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.retrieve(os.getenv("OPENAI_ASSISTANT"))
-    
+       
     if 'openai_fileids' not in st.session_state:
-        st.session_state.openai_fileids = []    
+        st.session_state.openai_fileids = []
+    
+    if 'initialized' not in st.session_state:
+        st.session_state.initialized = False
+    
+    if 'cleanup' not in st.session_state:
+        st.session_state.cleanup = False
+        
+    if 'uploaded_to_openai' not in st.session_state:
+        st.session_state.uploaded_to_openai = False

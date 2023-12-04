@@ -22,19 +22,36 @@ load_dotenv(find_dotenv())
 sessionvars.initialize_session_vars()
 
 def delete_files_from_openai():
+    files = st.session_state.ai_client.files.list()
+    # Check if there are no files
+    if not files.data:
+        pass # End the function if there are no files
+
+    # If there are files, proceed with deletion
+    for file in files.data:
+        file_id = file.id
+        st.session_state.ai_client.files.delete(
+            file_id=file_id
+        )    
+        print(f"Deleted file {file_id}")
+    
     files = st.session_state.ai_client.beta.assistants.files.list(
         assistant_id=os.getenv("OPENAI_ASSISTANT")
     )
 
-    if not files:  # Check if files list is empty
-            return
+    # Check if there are no files
+    if not files.data:
+        pass
 
-
-    for file in files:
+    # If there are files, proceed with deletion
+    for file in files.data:
         file_id = file.id
         st.session_state.ai_client.beta.assistants.files.delete(
             assistant_id=os.getenv("OPENAI_ASSISTANT"),
-            file_id=file_id)
+            file_id=file_id
+        )
+        print(f"Deleted file {file_id}")
+
 
 def context_selection():
     """
