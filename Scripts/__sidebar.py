@@ -141,6 +141,11 @@ def teacher_sidebar():
 
         sc.teacher_schedule()
 
+        if st.sidebar.button("Reset Chat", use_container_width=True, ):
+            st.session_state.user_info['user_id'] = None
+            st.session_state.cleanup = False
+            st.experimental_rerun()
+
 
 def student_sidebar():
     # Sidebar for class selection and new class joining
@@ -153,7 +158,8 @@ def student_sidebar():
                 - **Modules**: Upload your notes to a specified class module. 📚
                 - **FAQ**: View FAQs or create a new one. 🎓
                 - **Upcoming Assignments**: Use this to view and manage the class's assignments. 🗓️
-            """)
+                 
+                 Clicking on a button toggles the corresponding function.""")
         st.sidebar.title("Manage Classes")
         manage_classes_description = """
         **The Manage Class feature allows the student to:**
@@ -163,8 +169,10 @@ def student_sidebar():
         st.write(manage_classes_description)
         cm.show_class()
 
+        col111, col222 = st.columns([1.4,1])
+
         # Button to join a new class
-        if st.button("Join a new class"):
+        if col111.button("Join a new class", use_container_width=True):
             st.session_state.show_join_class_input = not st.session_state.show_join_class_input
 
         if st.session_state.show_join_class_input:
@@ -183,7 +191,7 @@ def student_sidebar():
         st.write(modules_description)
         md.show_module()
 
-        if st.button("Upload File", key='module_upload'):
+        if st.button("Upload File", key='module_upload', use_container_width=True):
             st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
 
         if st.session_state.show_upload_file2:
@@ -209,3 +217,8 @@ def student_sidebar():
         st.write(upcoming_assignments_description)
 
         sc.student_schedule()
+
+        if st.sidebar.button("Reset Chat", use_container_width=True, ):
+            st.session_state.user_info['user_id'] = None
+            st.session_state.cleanup = False
+            st.experimental_rerun()
