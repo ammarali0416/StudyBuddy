@@ -35,7 +35,6 @@ with col2:
     st.image(logo_path, width= custom_width)
 
 st.subheader("An Intelligent Education App", )
-
 # Display the login container
 # This block defining what the app does when the user_id value is equal to None
 if not st.session_state.user_info['user_id']:

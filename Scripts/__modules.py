@@ -37,7 +37,7 @@ def show_module():
 def create_new_module():
     # Input field and button for new module creation
     new_module_name = st.text_input("Enter the name for the new module")
-    new_module_learning_outcomes = st.text_area("Enter the learning outcomes for the module", "Enter the learning outcomes for the new class", label_visibility='hidden')
+    new_module_learning_outcomes = st.text_area("Enter the learning outcomes for the module", "Enter the learning outcomes for the module", label_visibility='hidden')
 
     if st.button("Submit New Module"):
         if new_module_name and new_module_learning_outcomes:
