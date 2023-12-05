@@ -1,9 +1,9 @@
 ![Study Buddy Logo](StudyBuddyLogo.png)
-## StudyBuddy: An Intelligent Education App
+# StudyBuddy: An Intelligent Education App
 
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions. It offers a range of features including class creation, FAQ management, file uploads for teachers, and interactive class joining and FAQ interactions for students.
 
-## How it Works
+# How it Works
 ![Study Buddy Architecture Diagram](Overview.png)
 
 StudyBuddy operates through a user-friendly interface, allowing teachers to create classes, modules within their classes, manage FAQs, and upload files.
@@ -12,32 +12,32 @@ Students can join classes using a class code and interact with the class materia
 When a conversation begins, the user selects the modules they want to chat about. Once these are selected, the app pulls the relevant files from Azure blob storage, and the relevant contextual information for the class and each selected module from Azure SQL DB, and uploads this to the OpenAI API endpoint. The OpenAI assistant retrieves this information as necessary to inform its responses.
 Teachers can use the chatbot to ask about the extent of their students’ knowledge, since the chatbot analyzes notes uploaded by students. They can also use it as a tool for lesson planning and ensuring they meet federal, state, and local education requirements. Students can use the chatbot to ask about anything pertaining to the class; the chatbot’s prompting is set up in a way in which it does not directly give students all the answers, rather it aims to act as a teacher in guiding them to the answer so the student actively learns in the process.
 
-## Features:
+### Features:
 ##### Add Classes
 ##### Add Modules within Classes
 ##### Add/Answer FAQs
 ##### Manage Assignments (Add/complete tasks)
 ##### Interactive chatbot 
 
-### Technical Details
+## Technical Details
 
 The application is structured with modularity in mind. Each feature, such as user authentication (`LOGIN.py`), dashboard management (`DASHBOARD.py`), FAQ handling (`__faqs.py`), and others, is encapsulated in its own script. This modular approach not only makes the codebase easier to navigate but also simplifies maintenance and future enhancements.
 
 Modules are imported efficiently, ensuring that each script only loads the necessary dependencies. This reduces the app's overall memory footprint and improves performance. For instance, `sessionvars.py` is crucial for maintaining user state across the application and is imported in scripts where session management is required. Similarly, `azsqldb.py` handles all interactions with the Azure SQL Database and is imported in modules requiring database access.
 
-### Prerequisites
+## Prerequisites
 
-#### Azure Services
+### Azure Services
 - [Azure Open AI](https://azure.microsoft.com/en-us/services/cognitive-services/openai-service/)
 - [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/)
 - [Azure AI Search](https://azure.microsoft.com/en-us/services/search/)
 
 Create an Azure account [here](https://azure.microsoft.com) if you do not already have one.
 
-#### Required Packages
+### Required Packages
 Run `pip install -r requirements.txt` in your terminal to install necessary packages.
 
-#### Python Environment
+### Python Environment
 Configure a `.env` file in the root directory with the following variables:
 
 OPENAI_API_KEY= Your API key for Open AI services  
