@@ -3,6 +3,25 @@
 
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions. It offers a range of features including class creation, FAQ management, file uploads for teachers, and interactive class joining and FAQ interactions for students.
 
+# Demo the app
+### User accounts
+Sample teacher account (Username: t1, Password t1)
+Sample student accounts (Username s1, Password s1)
+
+### Try out some of the following prompts:
+#### Sample Teacher prompt:
+Log in as t1
+Select the REL 3367 class from the dropdown menu
+Select the Early Islam Module from the dropdown menu
+Ask Study Buddy: Please make me an assignment that will allow students to learn about the characteristics of the Early Islamic time period and issues that arose following the death of Prophet Muhammad. This assignment should be a medium-hard level of difficulty and require some critical thinking components.
+
+#### Sample Student prompt:
+Log in as s1
+Select the BUS 5000 class from the dropdown menu
+Select the Introduction module from the dropdown menu
+Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.
+
+
 # How it Works
 ![Study Buddy Architecture Diagram](Overview.png)
 
@@ -25,14 +44,18 @@ The application is structured with modularity in mind. Each feature, such as use
 
 Modules are imported efficiently, ensuring that each script only loads the necessary dependencies. This reduces the app's overall memory footprint and improves performance. For instance, `sessionvars.py` is crucial for maintaining user state across the application and is imported in scripts where session management is required. Similarly, `azsqldb.py` handles all interactions with the Azure SQL Database and is imported in modules requiring database access.
 
-## Prerequisites
 
+## Tech Stack
 ### Azure Services
-- [Azure Open AI](https://azure.microsoft.com/en-us/services/cognitive-services/openai-service/)
-- [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/)
-- [Azure AI Search](https://azure.microsoft.com/en-us/services/search/)
-
-Create an Azure account [here](https://azure.microsoft.com) if you do not already have one.
+##### Azure SQL Database (https://azure.microsoft.com/en-us/services/sql-database/)
+      – storing and retrieving user data
+##### Azure Storage (https://azure.microsoft.com/en-us/products/storage/blobs)
+      – for file storage
+##### Azure App Service (https://azure.microsoft.com/en-us/products/app-service)
+      – to host the project as a web app
+### OpenAI Services (https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+##### OpenAI custom configured assistant
+##### Code interpreter and knowledge retrieval are enabled
 
 ### Required Packages
 Run `pip install -r requirements.txt` in your terminal to install necessary packages.
