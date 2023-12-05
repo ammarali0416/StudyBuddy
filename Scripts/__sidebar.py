@@ -21,13 +21,16 @@ sessionvars.initialize_session_vars()
 def teacher_sidebar():   
     # Sidebar for class selection and new class creation
     with st.sidebar:
+        st.sidebar.title(f"Welcome, {st.session_state.user_info['username']}!")
+
         st.write("""
                 Here's a quick guide to the buttons you'll find on this page: 
                 - **Class**: Navigate through classes.
                 - **Modules**: Upload class materials, assignments, and other resources. 📚
                 - **FAQs**: View and answer students' questions. 🎓
                 - **Manage Assignments**: Use this to view and manage the class's tasks. 🗓️
-                            """)
+                
+                 Clicking on a button toggles the corresponding function.""")
         ## Class management
         st.sidebar.title("Class")
 
@@ -42,17 +45,17 @@ def teacher_sidebar():
 
         cm.show_class()
 
-        col1, col2 = st.columns([1,1])
+        col1, col2 = st.columns([1.4,1])
 
         with col1:
             # Button to create a new class
-            if st.button("Create a new class"):
+            if st.button("New Class", use_container_width=True):
                 st.session_state.show_new_class_input = not st.session_state.show_new_class_input
                 st.session_state.show_upload_file = False
 
         with col2:
             # Button to upload class level files
-            if st.button("Upload File", key='class_upload'):
+            if st.button("Upload File", key='class_upload', use_container_width=True):
                 st.session_state.show_upload_file = not st.session_state.show_upload_file ## Upload class files
                 st.session_state.show_new_class_input = False
 
@@ -82,13 +85,13 @@ def teacher_sidebar():
         col3, col4, col5 = st.columns([1,1,1])
         
         with col3:
-            if st.button("Create a new module"):
+            if st.button("New module"):
                 st.session_state.new_module_toggle = not st.session_state.new_module_toggle
                 st.session_state.delete_module_toggle = False
                 st.session_state.show_upload_file2 = False
     
         with col4:  
-            if st.button("Delete a module"):
+            if st.button("Delete module"):
                 st.session_state.delete_module_toggle = not st.session_state.delete_module_toggle
                 st.session_state.new_module_toggle = False
                 st.session_state.show_upload_file2 = False
@@ -142,6 +145,8 @@ def teacher_sidebar():
 def student_sidebar():
     # Sidebar for class selection and new class joining
     with st.sidebar:
+        st.sidebar.title(f"Welcome, {st.session_state.user_info['username']}!")
+
         st.write("""
                 Here's a quick guide to the buttons you'll find on this page: 
                 - **Manage Classes**: Navigate through courses.

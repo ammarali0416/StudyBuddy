@@ -23,7 +23,7 @@ def upload_class_file():
                         accept_multiple_files=True,
                         help=help_text,
                         key = st.session_state.upload_key) 
-    if st.button("Submit", key='class_upload_submit'):
+    if st.button("Submit", key='class_upload_submit', use_container_width=True):
         # Display a warning if the user hasn't uploaded a file
         if not files:                 
             st.warning("Please upload a file first!")
@@ -43,7 +43,7 @@ def upload_module_file():
                         accept_multiple_files=True,
                         help=help_text,
                         key = "fufuf" + st.session_state.upload_key_2) 
-    if st.button("Submit"):
+    if st.button("Submit", use_container_width=True):
         # Display a warning if the user hasn't uploaded a file
         if not files:                 
             st.warning("Please upload a file first!")

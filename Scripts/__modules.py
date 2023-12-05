@@ -39,7 +39,7 @@ def create_new_module():
     new_module_name = st.text_input("Enter the name for the new module")
     new_module_learning_outcomes = st.text_area("Enter the learning outcomes for the module", "Enter the learning outcomes for the module", label_visibility='hidden')
 
-    if st.button("Submit New Module"):
+    if st.button("Submit New Module", use_container_width=True):
         if new_module_name and new_module_learning_outcomes:
             # Call the function to add a new module to the database
             azsqldb.new_module(st.session_state.class_info['class_id'], new_module_name, new_module_learning_outcomes, st.session_state.sqlcursor)
@@ -68,7 +68,7 @@ def delete_module():
         module_id = module_data[selected_module_name]  # Assuming module_data maps module names to their ids
 
         # Button to delete the selected module
-        if st.button("Delete Module"):
+        if st.button("Delete Module", use_container_width=True):
             # Call the function to delete the module from the database
             azsqldb.delete_module(module_id, st.session_state.sqlcursor)
             st.session_state.delete_module_toggle = False  # Hide the input fields after submission

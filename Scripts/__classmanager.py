@@ -49,7 +49,7 @@ def create_new_class():
     new_class_name = st.text_input("Enter the name for the new class", "Name?", label_visibility='hidden')
     new_class_learning_outcomes = st.text_area("Enter the learning outcomes for the new class", "Enter the learning outcomes for the new class", label_visibility='hidden')
 
-    if st.button("Submit Class"):
+    if st.button("Submit", use_container_width=True):
         if new_class_name and new_class_learning_outcomes:
             azsqldb.new_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_name, new_class_learning_outcomes)
             class_data = fetch_class_data()  # Refresh the class data
