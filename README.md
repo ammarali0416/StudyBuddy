@@ -23,7 +23,7 @@ StudyBuddy is an innovative educational application designed to streamline class
 4. Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.  
 
 # How it Works
-![Study Buddy Architecture Diagram](Study-Buddy-Architecture-Diagram.png)
+![StudyBuddyArchitectureDiagram](Study-Buddy-Architecture-Diagram.png)
 
 StudyBuddy operates through a user-friendly interface, allowing teachers to create classes, modules within their classes, manage FAQs, and upload files.
 
