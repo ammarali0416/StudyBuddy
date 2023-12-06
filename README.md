@@ -5,9 +5,9 @@ StudyBuddy is an innovative educational application designed to streamline class
 
 # Demo the app
 ### User accounts
-    Sample teacher account (Username: t1, Password t1)
+- Sample teacher account (Username: t1, Password t1)
 
-    Sample student accounts (Username s1, Password s1)
+* Sample student accounts (Username s1, Password s1)
 
 ### Try out some of the following prompts:
 #### Sample Teacher prompt:
@@ -17,14 +17,10 @@ StudyBuddy is an innovative educational application designed to streamline class
 4. Ask Study Buddy: Please make me an assignment that will allow students to learn about the characteristics of the Early Islamic time period and issues that arose following the death of Prophet Muhammad. This assignment should be a medium-hard level of difficulty and require some critical thinking components.
 
 #### Sample Student prompt:
-1. Log in as s1
-
-2. Select the BUS 5000 class from the dropdown menu
-
-3. Select the Introduction module from the dropdown menu
-
-4. Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.
-
+1. Log in as s1  
+2. Select the BUS 5000 class from the dropdown menu  
+3. Select the Introduction module from the dropdown menu  
+4. Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.  
 
 # How it Works
 ![Study Buddy Architecture Diagram](Overview.png)
