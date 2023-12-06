@@ -45,20 +45,20 @@ Teachers can use the chatbot to ask about the extent of their students’ knowle
 
 # Tech Stack
 ### Azure Services
-##### [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/)
-  –  storing and retrieving user data
-##### [Azure Storage](https://azure.microsoft.com/en-us/products/storage/blobs)
-  –  for file storage
-##### [Azure App Service](https://azure.microsoft.com/en-us/products/app-service)
-  –  to host the project as a web app
+- ##### [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/)
+  - storing and retrieving user data
+- ##### [Azure Storage](https://azure.microsoft.com/en-us/products/storage/blobs)
+  - for file storage
+- ##### [Azure App Service](https://azure.microsoft.com/en-us/products/app-service)
+   - to host the project as a web app
 ### [OpenAI Services](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
-##### OpenAI custom configured assistant
-##### Code interpreter and knowledge retrieval are enabled
+- ##### OpenAI custom configured assistant
+- ##### Code interpreter and knowledge retrieval are enabled
 
 ### Prerequisites to run locally
 * Access to an Open API Key  
 * An Open AI Assistant  
-* Access to the above mention Azure (https://azure.microsoft.com/en-us) and OpenAI (https://openai.com/) service
+* Access to the above mention [Azure](https://azure.microsoft.com/en-us) and [OpenAI](https://openai.com/) service
 
   
 Create an Azure account here if you do not already have one
@@ -84,4 +84,4 @@ Run `streamlit run app.py`
 Deploying this to production, we would opt to use Azure OpenAI services as opposed to a regular OpenAI endpoint. Azure OpenAI services could easily replace OpenAI’s services in the framework we built, we just need access to an Azure Open AI key.
 
 ## Built With
-Streamlit - The framework used to build the app.
+[Streamlit](https://streamlit.io/) - The framework used to build the app.
