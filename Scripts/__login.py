@@ -9,30 +9,21 @@
 #    Updated: 2023/11/05 20:20:07 by ammar syed       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-import azsqldb
+from Scripts import azsqldb, sessionvars
 import streamlit as st
 
-# Store the user id
-if "user_id" not in st.session_state:
-    st.session_state.user_id = None
-
-# Store the user role
-if "role" not in st.session_state:
-    st.session_state.role = None
-
-# Create a cursor object
-if "sqlcursor" not in st.session_state:
-    st.session_state.sqlcursor = azsqldb.connect_to_azure_sql()
+sessionvars.initialize_session_vars()
 
 def signup():
     st.subheader("Sign Up")
-    
+    st.info("Please fill in the details below to create a new account.")
     # User details input
     new_username = st.text_input("Create a new username")
     new_password = st.text_input("Create a password", type="password")
     email = st.text_input("Enter your email")
     school = st.text_input("Enter your school")
     
+    st.info("Students must have a class code to join classes. Only teachers can create classes")
     # Role selection using radio buttons
     role = st.radio("Select your role", ["student", "teacher"])
     
@@ -52,21 +43,24 @@ def login():
         is_authenticated, message, role, user_id = azsqldb.authenticate_user(st.session_state.sqlcursor, username, password)
         
         if is_authenticated:
-            st.session_state.user_id = user_id   # Store the user_id in session_state
-            st.session_state.role = role # Store the role to determine what gets shown on the other pages
-            st.success(f"Welcome, {username}! \n Your dashboard is now available!")
-            
+            user_info = {'user_id': user_id,
+                         'role': role,
+                         'username': username}
+            st.session_state.user_info = user_info
         else:
             st.error(message)
 
-# Main application
-st.set_page_config(page_title="Study Buddy",
-                   initial_sidebar_state="auto")
+def LoginContainer():
+    # Main application
+    # Create a dropdown to select action (Sign Up or Log In)
+    st.info("Trying to demo the app?\n\n Use pre-made accounts found here: https://github.com/ammarali0416/StudyBuddy")
+    selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"], key="login_selectbox")
 
-# Create a dropdown to select action (Sign Up or Log In)
-selected_action = st.selectbox("Select an action:", ["Sign Up", "Log In"])
+    if selected_action == "Sign Up":
+        signup()
+    elif selected_action == "Log In":
+        login()
 
-if selected_action == "Sign Up":
-    signup()
-elif selected_action == "Log In":
-    login()
+    # check if the user is logged in and if so display this at the bottom of the screeon
+    if st.session_state.user_info['user_id'] != None:
+        st.success(f"Welcome, {st.session_state.user_info['username']}! \n Your dashboard is now available!")

@@ -1,124 +1,193 @@
-# Import necessary libraries
-#import databutton as db
+from Scripts import azsqldb
+from Scripts import sessionvars
+from Scripts import __login as lg
+from Scripts import __sidebar as sb
+from Scripts import __chatscreen as cs
+from Scripts import azblob as azb
 import streamlit as st
-import openai
-from brain import get_index_for_pdf
-from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
+from markdownlit import mdlit
+import pandas as pd
 import os
-from dotenv import load_dotenv
+import time
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
+sessionvars.initialize_session_vars()
 
 
-# Set the title for the Streamlit app
+if st.session_state.cleanup == False:
+    print("Cleaning up files from OpenAI")
+    cs.delete_files_from_openai()
+    print("DONE")
+    st.session_state.cleanup = True
 
-st.title("Study Buddy")
+custom_width = 250
 
-# Set up the OpenAI API key from databutton secrets
-# Get the path to the directory this file is in
-BASEDIR = os.path.abspath(os.path.dirname(__file__))
+# Assuming the image is in the same directory as your script
+logo_path = 'StudyBuddyLogo.png'
 
-# Connect the path with your '.env' file name
-load_dotenv(os.path.join(BASEDIR, '.env'))
-openai.api_key = os.getenv('OPENAI_API_KEY')
-#os.environ["OPENAI_API_KEY"] = db.secrets.get("OPENAI_API_KEY")
-
-
-# Cached function to create a vectordb for the provided PDF files
-@st.cache_data
-def create_vectordb(files, filenames):
-    # Show a spinner while creating the vectordb
-    with st.spinner("Vector database"):
-        vectordb = get_index_for_pdf(
-            [file.getvalue() for file in files], filenames, openai.api_key
-        )
-    return vectordb
+col1, col2, col3 = st.columns([1,1,1])
 
 
-# Upload PDF files using Streamlit's file uploader
-pdf_files = st.file_uploader("", type="pdf", accept_multiple_files=True)
+# Display the logo at the top of the page
+with col2:
+    st.image(logo_path, width= custom_width)
 
-# If PDF files are uploaded, create the vectordb and store it in the session state
-if pdf_files:
-    pdf_file_names = [file.name for file in pdf_files]
-    st.session_state["vectordb"] = create_vectordb(pdf_files, pdf_file_names)
+st.subheader("An Intelligent Education App", )
 
-# Define the template for the chatbot prompt
-prompt_template = """
-    You are a helpful Assistant who answers to users questions based on multiple contexts given to you.
+# Display the login container
+# This block defining what the app does when the user_id value is equal to None
+if not st.session_state.user_info['user_id']:
+    lg.LoginContainer()
+    with st.sidebar:
+        st.warning("Please sign in first!")
+    if st.session_state.user_info['user_id']:
+        st.experimental_rerun()
 
-    Keep your answer short and to the point.
+
+# If the user is logged in, display the chat screen
+if st.session_state.user_info['user_id']:    
+    # Display the teacher sidebar
+    if st.session_state.user_info['role'] == 'teacher':
+        sb.teacher_sidebar()  
+    else:
+        sb.student_sidebar()
     
-    The evidence are the context of the pdf extract with metadata. 
+    # Display the chat screen
+    if st.session_state.context_selection_toggle:
+        cs.context_selection()
     
-    Carefully focus on the metadata specially 'filename' and 'page' whenever answering.
-    
-    Make sure to add filename and page number at the end of sentence you are citing to.
+    # block runs only after context has been selected
+    if st.session_state.selected_modules not in [None, []]:
+        col4, col5 = st.columns([1,1])
+
+        col4.write(f"Chatting about: {st.session_state.selected_modules}")
+        col5.write(f"Current session: {st.session_state.session_id}")
         
-    Reply "Not applicable" if text is irrelevant.
-     
-    The PDF content is:
-    {pdf_extract}
-"""
+        # Get all the class and module files
+        azb.get_class_and_module_files(st.session_state.class_info['class_name'])
+        # Retrieve only the selected modules' files
+        st.session_state.blobs_to_retrieve = st.session_state.blobs_df[st.session_state.blobs_df['module_name'].isin(st.session_state.selected_modules + ['CLASS_LEVEL'])]
+        #########################
+        #st.dataframe(st.session_state.blobs_to_retrieve)
+        # Store the openai file ids of all the files uploaded to the assistant
+        if st.session_state.uploaded_to_openai == False: # To ensure this only happens once
+            st.session_state.openai_fileids = cs.upload_files_ai(st.session_state.blobs_to_retrieve['full_path'])
+            st.session_state.uploaded_to_openai = True
+        # Initialize the assistant
+        if "studybuddy" not in st.session_state:
+            st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.retrieve(os.getenv('OPENAI_ASSISTANT'))
+            st.session_state.studybuddy = st.session_state.ai_client.beta.assistants.update(
+                assistant_id=st.session_state.studybuddy.id,
+                file_ids=st.session_state.openai_fileids
+            )
+            # Create a new thread for this session
+            st.session_state.thread = st.session_state.ai_client.beta.threads.create(
+                metadata={
+                    'session_id': st.session_state.session_id,
+                }
+            )
+        # If the run is completed, display the messages
+        elif hasattr(st.session_state.run, 'status') and st.session_state.run.status == "completed":
+            # Retrieve the list of messages
+            st.session_state.messages = st.session_state.ai_client.beta.threads.messages.list(
+                thread_id=st.session_state.thread.id
+            )
+        # Display sources
+            for thread_message in st.session_state.messages.data:
+                for message_content in thread_message.content:
+                    # Access the actual text content
+                    message_content = message_content.text
+                    annotations = message_content.annotations
+                    citations = []
+                    
+                    # Iterate over the annotations and add footnotes
+                    for index, annotation in enumerate(annotations):
+                        # Replace the text with a footnote
+                        message_content.value = message_content.value.replace(annotation.text, f' [{index}]')
+                    
+                        # Gather citations based on annotation attributes
+                        if (file_citation := getattr(annotation, 'file_citation', None)):
+                            cited_file = st.session_state.ai_client.files.retrieve(file_citation.file_id)
+                            citations.append(f'[{index}] {file_citation.quote} from {cited_file.filename}')
+                        elif (file_path := getattr(annotation, 'file_path', None)):
+                            cited_file = st.session_state.ai_client.files.retrieve(file_path.file_id)
+                            citations.append(f'[{index}] Click <here> to download {cited_file.filename}')
+                            # Note: File download functionality not implemented above for brevity
 
-# Get the current prompt from the session state or set a default value
-prompt = st.session_state.get("prompt", [{"role": "system", "content": "none"}])
+                    # Add footnotes to the end of the message before displaying to user
+                    message_content.value += '\n' + '\n'.join(citations)
+        # Display messages
+            for message in reversed(st.session_state.messages.data):
+                if message.role in ["user", "assistant"]:
+                    for content_part in message.content:
+                        message_text = content_part.text.value
+                        # Check if the message contains the specified phrase
+                        if "<INFO> INITIAL PROMPT </INFO>" not in message_text:
+                            with st.chat_message(message.role):
+                                st.markdown(message_text)
+                        else:
+                            # Optionally, you can print a message to the console for debugging
+                            print("Skipped a message containing the initial prompt info.")
+        
+        if st.session_state.initialized == False:
+            prompt = cs.initialize_chat()
+            st.session_state.initialized = True
+        else:
+            prompt = st.chat_input("How can I help you?")
 
-# Display previous chat messages
-for message in prompt:
-    if message["role"] != "system":
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+        if prompt:
+            with st.chat_message('user'):
+                st.write(prompt)
 
-# Get the user's question using Streamlit's chat input
-question = st.chat_input("Ask anything")
+            # Add message to the thread
+            st.session_state.messages = st.session_state.ai_client.beta.threads.messages.create(
+                thread_id=st.session_state.thread.id,
+                role="user",
+                content=prompt
+            )
+        # Do a run to process the messages in the thread
+            st.session_state.run = st.session_state.ai_client.beta.threads.runs.create(
+                thread_id=st.session_state.thread.id,
+                assistant_id=st.session_state.studybuddy.id,
+            )
+            print(f"Current run id: {st.session_state.run.id}")
+            if st.session_state.retry_error < 3:
+                time.sleep(1) # Wait 1 second before checking run status
+                st.rerun()
+        # Check if 'run' object has 'status' attribute
+        if hasattr(st.session_state.run, 'status'):
+            # Handle the 'running' status
+            if st.session_state.run.status == "running":
+                with st.chat_message('assistant'):
+                    st.write("Thinking ......")
+                if st.session_state.retry_error < 3:
+                    time.sleep(2)  # Short delay to prevent immediate rerun, adjust as needed
+                    st.rerun()
 
-# Handle the user's question
-if question:
-    vectordb = st.session_state.get("vectordb", None)
-    if not vectordb:
-        with st.message("assistant"):
-            st.write("You need to provide a PDF")
-            st.stop()
+            # Handle the 'failed' status
+            elif st.session_state.run.status == "failed":
+                st.session_state.retry_error += 1
+                with st.chat_message('assistant'):
+                    if st.session_state.retry_error < 3:
+                        st.write("Run failed, retrying ......")
+                        time.sleep(5)  # Longer delay before retrying
+                        st.rerun()
+                    else:
+                        st.error("FAILED: The OpenAI API is currently processing too many requests. Please try again later ......")
 
-    # Search the vectordb for similar content to the user's question
-    search_results = vectordb.similarity_search(question, k=5)
-    # search_results
-    pdf_extract = "/n ".join([result.page_content for result in search_results])
-
-    # Update the prompt with the pdf extract
-    prompt[0] = {
-        "role": "system",
-        "content": prompt_template.format(pdf_extract=pdf_extract),
-    }
-
-    # Add the user's question to the prompt and display it
-    prompt.append({"role": "user", "content": question})
-    with st.chat_message("user"):
-        st.write(question)
-
-    # Display an empty assistant message while waiting for the response
-    with st.chat_message("assistant"):
-        botmsg = st.empty()
-
-    # Call ChatGPT with streaming and display the response as it comes
-    response = []
-    result = ""
-    for chunk in openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", messages=prompt, stream=True
-    ):
-        text = chunk.choices[0].get("delta", {}).get("content")
-        if text is not None:
-            response.append(text)
-            result = "".join(response).strip()
-            botmsg.write(result)
-
-    # Add the assistant's response to the prompt
-    prompt.append({"role": "assistant", "content": result})
-
-    # Store the updated prompt in the session state
-    st.session_state["prompt"] = prompt
-    prompt.append({"role": "assistant", "content": result})
-
-    # Store the updated prompt in the session state
-    st.session_state["prompt"] = prompt
- 
+            # Handle any status that is not 'completed'
+            elif st.session_state.run.status != "completed":
+                print("""# Handle any status that is not 'completed'
+            elif st.session_state.run.status != "completed":""")
+                print(f"Current run status: {st.session_state.run.status}")
+                print(f"Current run id: {st.session_state.run.id}")
+                # Attempt to retrieve the run again, possibly redundant if there's no other status but 'running' or 'failed'
+                st.session_state.run = st.session_state.ai_client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state.thread.id,
+                    run_id=st.session_state.run.id,
+                )
+                if st.session_state.retry_error < 3:
+                    time.sleep(2)
+                    st.rerun()
