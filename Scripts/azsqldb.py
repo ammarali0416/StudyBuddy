@@ -138,7 +138,7 @@ def get_classes(user_id, role, sqlcursor):
   }
 # classes["Anam's Class"]['class_id'] would return 1]"""
 
-def new_class(user_id, sqlcursor, class_name):
+def new_class(user_id, sqlcursor, class_name, learnig_outcomes):
     """
     Create a new class
     """
@@ -146,7 +146,7 @@ def new_class(user_id, sqlcursor, class_name):
     class_code = ''.join(random.choices('0123456789ABCDEF', k=6))
 
     # Execute a SQL query to insert the new class
-    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id) VALUES (?, ?, ?)", (class_name, class_code, user_id))
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.classes (class_name, class_code, teacher_id, LearningOutcomes) VALUES (?, ?, ?, ?)", (class_name, class_code, user_id, learnig_outcomes))
     # Commit the transaction
     sqlcursor.connection.commit()
 
@@ -205,6 +205,36 @@ def get_questions(class_id, sqlcursor):
     # Create and return a DataFrame from the list of dictionaries
     df = pd.DataFrame(data)
     return df
+
+def get_questions_usernames(class_id, sqlcursor):
+    """
+    Get all the questions and answers for a particular class
+    and return them as a Pandas DataFrame.
+    Instead of the user_id, return the username.
+    """
+    # Execute a SQL query to get all the questions for the provided class_id
+    sqlcursor.execute("""SELECT b.username, a.question, a.answer 
+                      FROM master.STUDYBUDDY.FAQs a 
+                      LEFT JOIN master.STUDYBUDDY.Users b ON
+                        a.user_id = b.user_id
+                      WHERE class_id = ?""", (class_id,))
+    
+    # Fetch all the records returned by the query
+    question_records = sqlcursor.fetchall()
+
+    # Create a list of dictionaries for each record
+    data = []
+    for record in question_records:
+        data.append({
+            'username': record[0],
+            'question': record[1],
+            'answer': record[2]
+        })
+
+    # Create and return a DataFrame from the list of dictionaries
+    df = pd.DataFrame(data)
+    return df
+
 
 def update_faqs(original_df, edited_df, sqlcursor):
     # Separate new questions (with None in faq_id)
@@ -279,6 +309,17 @@ def update_faqs(original_df, edited_df, sqlcursor):
         # Commit the changes after deletion
         sqlcursor.connection.commit()
 
+def ask_question(user_id, class_id, question, sqlcursor):
+    """
+    Ask a question in a particular class.
+    """
+    # Execute a SQL query to insert the new question
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.FAQs (class_id, user_id, question) VALUES (?, ?, ?)", (class_id, user_id, question))
+    # Commit the transaction
+
+    sqlcursor.connection.commit()
+
+
 def update_class(sqlcursor, class_id, field, new_value):
     """
     Update the class table with the new value for the provided field
@@ -294,6 +335,83 @@ def update_class(sqlcursor, class_id, field, new_value):
 
     # Commit the changes
     sqlcursor.connection.commit()
+
+def get_modules(class_id, sqlcursor):
+    """
+    Get all the modules associated with a particular class
+    Returns a dictionary mapping module names to their module IDs
+    """
+    # Execute SQL query to get all modules for the provided class_id
+    sqlcursor.execute("""
+        SELECT module_id, module_name
+        FROM master.STUDYBUDDY.Modules
+        WHERE class_id = ?
+    """, (class_id,))
+    
+    # Fetch all records from the query
+    module_records = sqlcursor.fetchall()
+    
+    # Create a dictionary mapping module names to their IDs
+    module_info_mapping = {record[1]: record[0] for record in module_records}
+    
+    return module_info_mapping
+
+def new_module(class_id, module_name, learning_outcome, sqlcursor):
+    """
+    Create a new module for a specific class.
+    """
+    # Execute a SQL query to insert the new module
+    sqlcursor.execute("""
+        INSERT INTO master.STUDYBUDDY.Modules (class_id, module_name, LearningOutcomes) 
+        VALUES (?, ?, ?)
+    """, (class_id, module_name, learning_outcome))
+    # Commit the transaction
+    sqlcursor.connection.commit()
+
+def delete_module(module_id, sqlcursor):
+    """
+    Delete a module from the database.
+    """
+    # Execute a SQL query to delete the module
+    sqlcursor.execute("""
+        DELETE FROM master.STUDYBUDDY.Modules
+        WHERE module_id = ?
+    """, (module_id,))
+    # Commit the transaction
+    sqlcursor.connection.commit()
+
+def get_learning_outcomes(class_id, selected_modules, sqlcursor):
+    """
+    Get the learning outcomes for the selected modules.
+    Returns a dictionary mapping module names to their learning outcomes and class information.
+    """
+    # Execute a SQL query to get the learning outcomes for the selected modules
+    sqlcursor.execute("""
+        SELECT module_name, LearningOutcomes
+        FROM master.STUDYBUDDY.Modules
+        WHERE class_id = ?
+        AND module_name IN ({})
+    """.format(','.join('?' * len(selected_modules))), (class_id, *selected_modules))
+    # Fetch all records from the query
+    learning_outcome_records = sqlcursor.fetchall()
+    # Create a dictionary mapping module names to their learning outcomes
+    learning_outcomes = {}
+    for record in learning_outcome_records:
+        module_name = record[0]
+        learning_outcome = record[1]
+        learning_outcomes[module_name] = learning_outcome
+    
+    # Execute a SQL query to get the class information
+    sqlcursor.execute("""
+        SELECT class_name, LearningOutcomes
+        FROM master.STUDYBUDDY.Classes
+        WHERE class_id = ?
+    """, (class_id,))
+    # Fetch the record from the query
+    class_record = sqlcursor.fetchone()
+    class_learning_outcomes = class_record[1]
+    
+    return learning_outcomes, class_learning_outcomes
 
 
 def get_assignments(class_id, sqlcursor):

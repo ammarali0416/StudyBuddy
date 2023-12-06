@@ -16,13 +16,14 @@ sessionvars.initialize_session_vars()
 
 def signup():
     st.subheader("Sign Up")
-    
+    st.info("Please fill in the details below to create a new account.")
     # User details input
     new_username = st.text_input("Create a new username")
     new_password = st.text_input("Create a password", type="password")
     email = st.text_input("Enter your email")
     school = st.text_input("Enter your school")
     
+    st.info("Students must have a class code to join classes. Only teachers can create classes")
     # Role selection using radio buttons
     role = st.radio("Select your role", ["student", "teacher"])
     
@@ -52,7 +53,7 @@ def login():
 def LoginContainer():
     # Main application
     # Create a dropdown to select action (Sign Up or Log In)
-
+    st.info("Trying to demo the app?\n\n Use pre-made accounts found here: https://github.com/ammarali0416/StudyBuddy")
     selected_action = st.selectbox("Select an action:", ["Log In", "Sign Up"], key="login_selectbox")
 
     if selected_action == "Sign Up":

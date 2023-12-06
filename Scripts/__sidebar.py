@@ -14,123 +14,216 @@
     This file contains the sidebar for the dashboard page
 '''
 import streamlit as st
-from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc
+from Scripts import azsqldb, sessionvars, __faqs as fq, __fileupload as fu, __schedule as sc, __classmanager as cm, __modules as md
 
 sessionvars.initialize_session_vars()
 
-def fetch_class_data():
-    return azsqldb.get_classes(st.session_state.user_info['user_id'],
-                                st.session_state.user_info['role'],
-                                st.session_state.sqlcursor)
-
-def teacher_sidebar():
-    # Fetch class data
-    class_data = fetch_class_data()
-   
+def teacher_sidebar():   
     # Sidebar for class selection and new class creation
     with st.sidebar:
+        st.sidebar.title(f"Welcome, {st.session_state.user_info['username']}!")
+
         st.write("""
                 Here's a quick guide to the buttons you'll find on this page: 
-                - **FAQ**: View and answer students' questions. 🎓
-                - **Schedule**: Use this to view and manage the class schedule. 🗓️
-                - **Upload Files**: Upload class materials, assignments, and other resources. 📚
-            """)
+                - **Class**: Navigate through classes.
+                - **Modules**: Upload class materials, assignments, and other resources. 📚
+                - **FAQs**: View and answer students' questions. 🎓
+                - **Manage Assignments**: Use this to view and manage the class's tasks. 🗓️
+                
+                 Clicking on a button toggles the corresponding function.""")
         ## Class management
-        st.sidebar.title("Manage Classes")
-        if class_data:
-            # Select box for choosing the class
-            selected_class_name = st.selectbox("Select class:", list(class_data.keys()), index=list(class_data.keys()).index(st.session_state.selected_class_name) if st.session_state.selected_class_name in class_data else 0)
-            st.session_state.selected_class_name = selected_class_name
-            # Display the class code for the selected class
-            if selected_class_name:
-                selected_class_info = class_data[selected_class_name]
-                st.session_state.class_info = selected_class_info
-                st.write(f"Class Code: {selected_class_info['class_code']}")
-        else:
-            st.selectbox("Select class:", ["No classes available"])
-            st.write("You haven't created any classes yet.")
+        st.sidebar.title("Class")
 
-        # Button to create a new class
-        if st.button("Create a new class"):
-            st.session_state.show_new_class_input = not st.session_state.show_new_class_input
+        class_description = """
+        **The Class feature allows the instructor to:**
+        - Create new classes.
+        - Upload educational materials pertaining to the class as a whole.
+        - Auto generate class code to enable students to join their class.
+        """
 
-        if st.session_state.show_new_class_input:
-            # Input field and button for new class creation
-            if st.session_state.show_new_class_input:
-                new_class_name = st.text_input("Enter the name for the new class")
-                if st.button("Submit New Class"):
-                    if new_class_name:
-                        azsqldb.new_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_name)
-                        class_data = fetch_class_data()  # Refresh the class data
-                        st.session_state.selected_class_name = new_class_name  # Update the selected class name
-                        st.session_state.show_new_class_input = False  # Hide the input fields after submission
-                        st.experimental_rerun()  # Rerun the script to reflect the changes
+        st.write(class_description)
+
+        cm.show_class()
+
+        col1, col2 = st.columns([1.4,1])
+
+        with col1:
+            # Button to create a new class
+            if st.button("New Class", use_container_width=True):
+                st.session_state.show_new_class_input = not st.session_state.show_new_class_input
+                st.session_state.show_upload_file = False
+
+        with col2:
+            # Button to upload class level files
+            if st.button("Upload File", key='class_upload', use_container_width=True):
+                st.session_state.show_upload_file = not st.session_state.show_upload_file ## Upload class files
+                st.session_state.show_new_class_input = False
+
         
+        # Block to create a new class
+        if st.session_state.show_new_class_input:
+            cm.create_new_class()
+
+        # Block to upload class level files
+        if st.session_state.show_upload_file:
+            fu.upload_class_file()
+
+        ####################################
+        #  Module management
+        st.sidebar.title("Modules")
+
+        module_description = """
+        **This functionality assists the educator in structuring their course by:**
+        - Creating and deleting distinct modules within classes. 
+        - Uploading specific educational materials within each module.
+        - Enabling students to pose targeted questions related to each module through the Study Buddy chat box.
+        """
+
+        st.write(module_description)
+        md.show_module()
+
+        col3, col4, col5 = st.columns([1,1,1])
+        
+        with col3:
+            if st.button("New module"):
+                st.session_state.new_module_toggle = not st.session_state.new_module_toggle
+                st.session_state.delete_module_toggle = False
+                st.session_state.show_upload_file2 = False
+    
+        with col4:  
+            if st.button("Delete module"):
+                st.session_state.delete_module_toggle = not st.session_state.delete_module_toggle
+                st.session_state.new_module_toggle = False
+                st.session_state.show_upload_file2 = False
+
+        with col5:
+            if st.button("Upload File", key='module_upload'):
+                st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
+                st.session_state.new_module_toggle = False
+                st.session_state.delete_module_toggle = False
+
+        if st.session_state.new_module_toggle:
+            md.create_new_module()
+        
+        if st.session_state.delete_module_toggle:
+            md.delete_module()
+        
+        if st.session_state.show_upload_file2:
+            fu.upload_module_file()
+
+        ####################################
         ### Faq functions
         st.sidebar.title("FAQs")
-        fq.teacher_faqs()
 
-        #file upload
-        st.sidebar.title("Upload Files")
-        fu.upload_file()
+        FAQs_description = """
+        **The FAQ feature empowers the instructor to:**
+        - Curate a set of frequently asked questions relevant to the class.
+        - Display this FAQ repository prominently in the student interface.
+        - Offer comprehensive answers to address any queries about the course.
+        - Answer questions directly sent by students. 
+        """
+
+        st.write(FAQs_description)
+
+        fq.teacher_faqs()
 
         #schedule
         st.sidebar.title("Manage Assignments")
+    
+        manage_description = """
+        **The Managing Assignments function allows teachers to:**
+        - This is a future feature we plan to release in the next version of Study Buddy.
+        - Generate tasks with due dates corresponding to the selected class.
+        - Make these tasks visible on the student interface.
+        - Enable students to mark them as completed.
+        """
+
+        st.write(manage_description)
+
         sc.teacher_schedule()
 
-        
+        if st.sidebar.button("Reset Chat", use_container_width=True, ):
+            st.session_state.user_info['user_id'] = None
+            st.session_state.cleanup = False
+            st.experimental_rerun()
 
 
 def student_sidebar():
-    # Fetch class data
-    class_data = fetch_class_data()
     # Sidebar for class selection and new class joining
     with st.sidebar:
+        st.sidebar.title(f"Welcome, {st.session_state.user_info['username']}!")
+
         st.write("""
                 Here's a quick guide to the buttons you'll find on this page: 
-                - **FAQ**: View FAQs or ask a new one. 🎓
-                - **Schedule**: Use this to view and manage the class schedule. 🗓️
-                - **Upload Files**: Upload your notes, outlines, etc. 📚
-            """)
+                - **Manage Classes**: Navigate through courses.
+                - **Modules**: Upload your notes to a specified class module. 📚
+                - **FAQ**: View FAQs or create a new one. 🎓
+                - **Upcoming Assignments**: Use this to view and manage the class's assignments. 🗓️
+                 
+                 Clicking on a button toggles the corresponding function.""")
         st.sidebar.title("Manage Classes")
-        if class_data:
-            # Select box for choosing the class
-            selected_class_name = st.selectbox("Select class:", list(class_data.keys()), index=list(class_data.keys()).index(st.session_state.selected_class_name) if st.session_state.selected_class_name in class_data else 0)
-            st.session_state.selected_class_name = selected_class_name
-            # Display the class info for the selected class
-            if selected_class_name:
-                selected_class_info = class_data[selected_class_name]
-                st.session_state.class_info = selected_class_info
-        else:
-            st.selectbox("Select class:", ["No classes available"])
-            st.write("You are not enrolled in any classes yet.")
+        manage_classes_description = """
+        **The Manage Class feature allows the student to:**
+        - View and select their classes from a list. 
+        - Join a new class using a class code provided by the instructor.
+        """
+        st.write(manage_classes_description)
+        cm.show_class()
+
+        col111, col222 = st.columns([1.4,1])
+
         # Button to join a new class
-        if st.button("Join a new class"):
+        if col111.button("Join a new class", use_container_width=True):
             st.session_state.show_join_class_input = not st.session_state.show_join_class_input
 
         if st.session_state.show_join_class_input:
-            # Input field and button for joining a new class
-            if st.session_state.show_join_class_input:
-                new_class_code = st.text_input("Enter the class code")
-                join_class_button = st.button("Join Class")
-                # Block to handle form submission
-                if join_class_button and new_class_code:
-                    join_message = azsqldb.join_class(st.session_state.user_info['user_id'], st.session_state.sqlcursor, new_class_code)
-                    st.warning(join_message)
-                    # Handle the a successful class join
-                    if join_message == "You have successfully joined the class!":
-                        class_data = fetch_class_data()  # Refresh the class data
-                        st.session_state.selected_class_name = list(class_data.keys())[-1]  # Update the selected class name to the newly joined class
-                        st.experimental_rerun()  # Rerun the script to reflect the changes
+            cm.join_class()
+        
 
+        ################################
+        # Modules
+        st.sidebar.title("Modules")
+        modules_description = """
+        **This Modules functionality allows the student to:**
+        - Navigate the modules in their selected course.
+        - Upload files pertaining to modules within the selected course which can then be used by the Study Buddy chat bot. 
+        """
+
+        st.write(modules_description)
+        md.show_module()
+
+        if st.button("Upload File", key='module_upload', use_container_width=True):
+            st.session_state.show_upload_file2 = not st.session_state.show_upload_file2
+
+        if st.session_state.show_upload_file2:
+            fu.upload_module_file()
 
         st.sidebar.title("FAQs")
-        fq.student_faqs()
-
-        #file upload
-        st.sidebar.title("Upload Files")
-        fu.upload_file()
+        faqs_description = """
+        **The FAQ feature empowers the student to:**
+        - Access and explore the FAQ repository, featuring questions deemed useful by the teacher.
+        - Directly pose questions to the teacher.
+        """
+        st.write(faqs_description)
+        if st.button("FAQs", use_container_width=True):
+            st.session_state.show_faqs = not st.session_state.show_faqs    
+        
+        if st.session_state.show_faqs:
+            fq.student_faqs()
+        
 
         #schedule
         st.sidebar.title("Upcoming Assignments")
+        upcoming_assignments_description = """
+       **The Upcoming Assignments function allows the student to:**
+        - Review tasks assigned by the instructor along with their respective due dates.
+        - Utilize the 'Done' button upon completing an assignment for organizational purposes, and the accomplished tasks will be displayed in the 'Completed Tasks' section.
+        """
+        st.write(upcoming_assignments_description)
+
         sc.student_schedule()
+
+        if st.sidebar.button("Reset Chat", use_container_width=True, ):
+            st.session_state.user_info['user_id'] = None
+            st.session_state.cleanup = False
+            st.experimental_rerun()
