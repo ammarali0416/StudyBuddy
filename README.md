@@ -3,24 +3,35 @@
 
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions. It offers a range of features including class creation, FAQ management, file uploads for teachers, and interactive class joining and FAQ interactions for students.
 
+> [!IMPORTANT]
+> We host our app on the free tier of Azure app services, so it is SLOW. Please be patient when waiting for responses from the chatbot.
+
+
 # Demo the app
+
 ### User accounts
 - Sample teacher account (Username: t1, Password t1)
 
 - Sample student accounts (Username s1, Password s1)
 
 ### Try out some of the following prompts:
-#### Sample Teacher prompt:
-1. Log in as t1  
-2. Select the REL 3367 class from the dropdown menu  
-3. Select the Early Islam Module from the dropdown menu  
-4. Ask Study Buddy: Please make me an assignment that will allow students to learn about the characteristics of the Early Islamic time period and issues that arose following the death of Prophet Muhammad. This assignment should be a medium-hard level of difficulty and require some critical thinking components.
+#### Sample Teacher prompts:
+- Log in as t1  
+- Select the REL 3367 class (one of our actual university courses!) from the dropdown menu  
+- Select the Early Islam Module from the dropdown menu  
+- Ask Study Buddy: Please make me an assignment that will allow students to learn about the characteristics of the Early Islamic time period and issues that arose following the death of Prophet Muhammad. This assignment should be a medium-hard level of difficulty and require some critical thinking components.
+
+or try:
+- Log in as t1
+- Select BUS500
+- Select all modules
+- Ask Study Buddy: Can you tell me which students submitted notes, and tell me who took detailed notes and who didn't?
 
 #### Sample Student prompt:
-1. Log in as s1  
-2. Select the BUS 5000 class from the dropdown menu  
-3. Select the Introduction module from the dropdown menu  
-4. Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.  
+- Log in as s1  
+- Select the BUS 5000 class from the dropdown menu  
+- Select the Introduction module from the dropdown menu  
+- Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.  
 
 # How it Works
 ![StudyBuddyArchitectureDiagram](StudyBuddyArchitectureDiagram.png)
@@ -50,7 +61,7 @@ Teachers can use the chatbot to ask about the extent of their students’ knowle
 - ##### [Azure Storage](https://azure.microsoft.com/en-us/products/storage/blobs)
   - for file storage
 - ##### [Azure App Service](https://azure.microsoft.com/en-us/products/app-service)
-   - to host the project as a web app
+   - to host the project as a web app with CI/CD
 ### [OpenAI Services](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 - ##### OpenAI custom configured assistant
 - ##### Code interpreter and knowledge retrieval are enabled
@@ -58,7 +69,7 @@ Teachers can use the chatbot to ask about the extent of their students’ knowle
 ### Prerequisites to run locally
 * Access to an Open API Key  
 * An Open AI Assistant  
-* Access to the above mention [Azure](https://azure.microsoft.com/en-us) and [OpenAI](https://openai.com/) service
+* Access to the above mention [Azure](https://azure.microsoft.com/en-us) and [OpenAI](https://openai.com/) services
 
   
 Create an Azure account here if you do not already have one
@@ -67,17 +78,17 @@ Create an Azure account here if you do not already have one
 1. Clone the repository git clone in command line
 2. Run `pip install -r requirements.txt` in your terminal to install necessary packages.
 3. Configure a `.env` file in the root directory with the following variables:
-
-`OPENAI_API_KEY= Your API key for Open AI services`  
-`OPENAI_ASSISTANT= Your OpenAI model`  
-`AZURE_SERVER= The server address for your Azure SQL Database`  
-`AZURE_DATABASE= The name of your Azure SQL database`  
-`AZURE_USERNAME= Your username for Azure SQL Database`  
-`AZURE_PASSWORD= Your password for Azure SQL Database`   
-`AZURE_STORAGE_CONNECTION_STRING= Your connection for Azure Storage account`  
-`AZURE_CONTAINER= Your name for Azure Blob storage container`  
- 
-Run `streamlit run app.py`
+  ```
+  OPENAI_API_KEY= Your API key for Open AI services  
+  OPENAI_ASSISTANT= Your OpenAI model
+  AZURE_SERVER= The server address for your Azure SQL Database  
+  AZURE_DATABASE= The name of your Azure SQL database  
+  AZURE_USERNAME= Your username for Azure SQL Database  
+  AZURE_PASSWORD= Your password for Azure SQL Database
+  AZURE_STORAGE_CONNECTION_STRING= Your connection for Azure Storage account  
+  AZURE_CONTAINER= Your name for Azure Blob storage container  
+  ``` 
+4. In command line, run `streamlit run app.py`
 
 ## Production improvements
 
