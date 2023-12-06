@@ -36,11 +36,11 @@ When a conversation begins, the user selects the modules they want to chat about
 Teachers can use the chatbot to ask about the extent of their students’ knowledge, since the chatbot analyzes notes uploaded by students. They can also use it as a tool for lesson planning and ensuring they meet federal, state, and local education requirements. Students can use the chatbot to ask about anything pertaining to the class; the chatbot’s prompting is set up in a way in which it does not directly give students all the answers, rather it aims to act as a teacher in guiding them to the answer so the student actively learns in the process.
 
 ### Features:
-##### * Add Classes
-##### * Add Modules within Classes
-##### - Add/Answer FAQs
-##### - Manage Assignments (Add/complete tasks)
-##### - Interactive chatbot 
+- ##### Add Classes
+- ##### Add Modules within Classes
+- ##### Add/Answer FAQs
+- ##### Manage Assignments (Add/complete tasks)
+- ##### Interactive chatbot 
 
 ## Technical Details
 
