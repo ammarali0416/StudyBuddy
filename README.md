@@ -62,7 +62,7 @@ Teachers can use the chatbot to ask about the extent of their students’ knowle
   - for file storage
 - ##### [Azure App Service](https://azure.microsoft.com/en-us/products/app-service)
    - to host the project as a web app with CI/CD
-### [OpenAI Services](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+### OpenAI Services
 - ##### OpenAI custom configured assistant
 - ##### Code interpreter and knowledge retrieval are enabled
 
