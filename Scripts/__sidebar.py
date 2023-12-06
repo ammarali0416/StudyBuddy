@@ -132,6 +132,7 @@ def teacher_sidebar():
     
         manage_description = """
         **The Managing Assignments function allows teachers to:**
+        - This is a future feature we plan to release in the next version of Study Buddy.
         - Generate tasks with due dates corresponding to the selected class.
         - Make these tasks visible on the student interface.
         - Enable students to mark them as completed.
