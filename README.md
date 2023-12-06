@@ -7,7 +7,7 @@ StudyBuddy is an innovative educational application designed to streamline class
 ### User accounts
 - Sample teacher account (Username: t1, Password t1)
 
-* Sample student accounts (Username s1, Password s1)
+- Sample student accounts (Username s1, Password s1)
 
 ### Try out some of the following prompts:
 #### Sample Teacher prompt:
