@@ -1,5 +1,5 @@
 ![Study Buddy Logo](StudyBuddyLogo.png)
-# **StudyBuddy: An Intelligent Education App**
+# StudyBuddy: An Intelligent Education App
 
 StudyBuddy is an innovative educational application designed to streamline classroom management and enhance student engagement through intelligent digital interactions. It offers a range of features including class creation, FAQ management, file uploads for teachers, and interactive class joining and FAQ interactions for students.
 
@@ -11,12 +11,9 @@ StudyBuddy is an innovative educational application designed to streamline class
 
 ### Try out some of the following prompts:
 #### Sample Teacher prompt:
-1. Log in as t1
-
-2. Select the REL 3367 class from the dropdown menu
-
-3. Select the Early Islam Module from the dropdown menu
-
+1. Log in as t1  
+2. Select the REL 3367 class from the dropdown menu  
+3. Select the Early Islam Module from the dropdown menu  
 4. Ask Study Buddy: Please make me an assignment that will allow students to learn about the characteristics of the Early Islamic time period and issues that arose following the death of Prophet Muhammad. This assignment should be a medium-hard level of difficulty and require some critical thinking components.
 
 #### Sample Student prompt:
