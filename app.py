@@ -163,7 +163,7 @@ if st.session_state.user_info['user_id']:
                 with st.chat_message('assistant'):
                     st.write("Thinking ......")
                 if st.session_state.retry_error < 3:
-                    time.sleep(5)  # Short delay to prevent immediate rerun, adjust as needed
+                    time.sleep(2)  # Short delay to prevent immediate rerun, adjust as needed
                     st.rerun()
 
             # Handle the 'failed' status
@@ -189,5 +189,5 @@ if st.session_state.user_info['user_id']:
                     run_id=st.session_state.run.id,
                 )
                 if st.session_state.retry_error < 3:
-                    time.sleep(3)
+                    time.sleep(2)
                     st.rerun()

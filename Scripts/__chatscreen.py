@@ -119,6 +119,8 @@ def initialize_chat():
                                                             st.session_state.selected_modules, 
                                                             st.session_state.sqlcursor)
 
+    faq_df = azsqldb.get_questions_usernames(st.session_state.class_info['class_id'], st.session_state.sqlcursor) 
+
     initial_prompt = f"""
 <INFO> INITIAL PROMPT </INFO>
 You're chatting with {st.session_state.user_info['username']}\n
@@ -132,7 +134,9 @@ You are going to discuss the following modules:\n
         initial_prompt += f" -Module: {module}\n\n"
         initial_prompt += f" -Learning outcomes: {outcome}\n\n"
 
-    initial_prompt += f"Here is info on the files you recieved:\n\n{st.session_state.blobs_to_retrieve}"
+    initial_prompt += f"Here is info on the files you recieved:\n\n{st.session_state.blobs_to_retrieve} \n\n"
+
+    initial_prompt += f"Here are the FAQs for this class:\n\n{faq_df}"
 
     return initial_prompt
 

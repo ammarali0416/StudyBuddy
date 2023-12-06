@@ -206,6 +206,36 @@ def get_questions(class_id, sqlcursor):
     df = pd.DataFrame(data)
     return df
 
+def get_questions_usernames(class_id, sqlcursor):
+    """
+    Get all the questions and answers for a particular class
+    and return them as a Pandas DataFrame.
+    Instead of the user_id, return the username.
+    """
+    # Execute a SQL query to get all the questions for the provided class_id
+    sqlcursor.execute("""SELECT b.username, a.question, a.answer 
+                      FROM master.STUDYBUDDY.FAQs a 
+                      LEFT JOIN master.STUDYBUDDY.Users b ON
+                        a.user_id = b.user_id
+                      WHERE class_id = ?""", (class_id,))
+    
+    # Fetch all the records returned by the query
+    question_records = sqlcursor.fetchall()
+
+    # Create a list of dictionaries for each record
+    data = []
+    for record in question_records:
+        data.append({
+            'username': record[0],
+            'question': record[1],
+            'answer': record[2]
+        })
+
+    # Create and return a DataFrame from the list of dictionaries
+    df = pd.DataFrame(data)
+    return df
+
+
 def update_faqs(original_df, edited_df, sqlcursor):
     # Separate new questions (with None in faq_id)
     new_questions = edited_df[edited_df['faq_id'].isnull()]
@@ -278,6 +308,17 @@ def update_faqs(original_df, edited_df, sqlcursor):
 
         # Commit the changes after deletion
         sqlcursor.connection.commit()
+
+def ask_question(user_id, class_id, question, sqlcursor):
+    """
+    Ask a question in a particular class.
+    """
+    # Execute a SQL query to insert the new question
+    sqlcursor.execute("INSERT INTO master.STUDYBUDDY.FAQs (class_id, user_id, question) VALUES (?, ?, ?)", (class_id, user_id, question))
+    # Commit the transaction
+
+    sqlcursor.connection.commit()
+
 
 def update_class(sqlcursor, class_id, field, new_value):
     """

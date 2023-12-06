@@ -204,7 +204,11 @@ def student_sidebar():
         - Directly pose questions to the teacher.
         """
         st.write(faqs_description)
-        fq.student_faqs()
+        if st.button("FAQs", use_container_width=True):
+            st.session_state.show_faqs = not st.session_state.show_faqs    
+        
+        if st.session_state.show_faqs:
+            fq.student_faqs()
         
 
         #schedule
