@@ -37,9 +37,9 @@ Teachers can use the chatbot to ask about the extent of their students’ knowle
 
 ### Features:
  * ##### Add Classes
- * ##### Add Modules within Classes
+    * ##### Add Modules within Classes
  * ##### Add/Answer FAQs
- * ##### Manage Assignments (Add/complete tasks)
+  * ##### Manage Assignments (Add/complete tasks)
  * ##### Interactive chatbot 
 
 
