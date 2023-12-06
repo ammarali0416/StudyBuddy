@@ -21,6 +21,9 @@ StudyBuddy is an innovative educational application designed to streamline class
 - Select the Early Islam Module from the dropdown menu  
 - Ask Study Buddy: Please make me an assignment that will allow students to learn about the characteristics of the Early Islamic time period and issues that arose following the death of Prophet Muhammad. This assignment should be a medium-hard level of difficulty and require some critical thinking components.
 
+> [!WARNING]
+> Please reset the chat before selecting a new class, and do not interact with the sidebar while the chat first loads to avoid errors.
+
 or try:
 - Log in as t1
 - Select BUS500
