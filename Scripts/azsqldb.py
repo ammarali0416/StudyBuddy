@@ -412,3 +412,35 @@ def get_learning_outcomes(class_id, selected_modules, sqlcursor):
     class_learning_outcomes = class_record[1]
     
     return learning_outcomes, class_learning_outcomes
+
+
+def get_assignments(class_id, sqlcursor):
+    """
+    Get all the assignments for a particular class
+    and return them as a Pandas DataFrame.
+    """
+    # Execute a SQL query to get all the assignments for the provided class_id
+    sqlcursor.execute("SELECT AssignmentID, ClassID, AssignmentName, DueDate FROM master.STUDYBUDDY.Assignments WHERE ClassID = ?", (class_id,))
+    
+    # Fetch all the records returned by the query
+    assignment_records = sqlcursor.fetchall()
+
+    # Create a list of dictionaries for each record
+    data = []
+    for record in assignment_records:
+        data.append({
+            'AssignmentID': record[0],
+            'ClassID': record[1],
+            'AssignmentName': record[2],
+            'DueDate': record[3]
+        })
+
+    # Create and return a DataFrame from the list of dictionaries
+    df = pd.DataFrame(data)
+    return df
+
+def add_assignment(sqlcursor, assignment_name, due_date, class_id):
+    # Add a new assignment to the database
+    query = f"INSERT INTO master.STUDYBUDDY.Assignments (AssignmentName, DueDate, ClassID) VALUES ('{assignment_name}', '{due_date}', {class_id})"
+    sqlcursor.execute(query)
+    sqlcursor.connection.commit()
