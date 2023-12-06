@@ -37,21 +37,21 @@ Teachers can use the chatbot to ask about the extent of their students’ knowle
 
 ### Features:
  * ##### Add Classes
-   * ##### Add Modules within Classes
+* ##### Add Modules within Classes
  * ##### Add/Answer FAQs
   * ##### Manage Assignments (Add/complete tasks)
  * ##### Interactive chatbot 
 
 
-## Tech Stack
+# Tech Stack
 ### Azure Services
-##### Azure SQL Database (https://azure.microsoft.com/en-us/services/sql-database/)
-      – storing and retrieving user data
-##### Azure Storage (https://azure.microsoft.com/en-us/products/storage/blobs)
-      – for file storage
-##### Azure App Service (https://azure.microsoft.com/en-us/products/app-service)
-      – to host the project as a web app
-### OpenAI Services (https://azure.microsoft.com/en-us/products/ai-services/openai-service)
+##### [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/)
+  –  storing and retrieving user data
+##### [Azure Storage](https://azure.microsoft.com/en-us/products/storage/blobs)
+  –  for file storage
+##### [Azure App Service](https://azure.microsoft.com/en-us/products/app-service)
+  –  to host the project as a web app
+### [OpenAI Services](https://azure.microsoft.com/en-us/products/ai-services/openai-service)
 ##### OpenAI custom configured assistant
 ##### Code interpreter and knowledge retrieval are enabled
 
@@ -68,14 +68,14 @@ Create an Azure account here if you do not already have one
 2. Run `pip install -r requirements.txt` in your terminal to install necessary packages.
 3. Configure a `.env` file in the root directory with the following variables:
 
-`OPENAI_API_KEY= Your API key for Open AI services
- OPENAI_ASSISTANT= Your OpenAI model
- AZURE_SERVER= The server address for your Azure SQL Database
- AZURE_DATABASE= The name of your Azure SQL database
- AZURE_USERNAME= Your username for Azure SQL Database
- AZURE_PASSWORD= Your password for Azure SQL Database
- AZURE_STORAGE_CONNECTION_STRING= Your connection for Azure Storage account
- AZURE_CONTAINER= Your name for Azure Blob storage container`
+`OPENAI_API_KEY= Your API key for Open AI services`  
+`OPENAI_ASSISTANT= Your OpenAI model`  
+`AZURE_SERVER= The server address for your Azure SQL Database`  
+`AZURE_DATABASE= The name of your Azure SQL database`  
+`AZURE_USERNAME= Your username for Azure SQL Database`  
+`AZURE_PASSWORD= Your password for Azure SQL Database`   
+`AZURE_STORAGE_CONNECTION_STRING= Your connection for Azure Storage account`  
+`AZURE_CONTAINER= Your name for Azure Blob storage container`  
  
 Run `streamlit run app.py`
 
