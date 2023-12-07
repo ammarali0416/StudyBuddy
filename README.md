@@ -31,7 +31,7 @@ or try:
 - Ask Study Buddy: Can you tell me which students submitted notes, and tell me who took detailed notes and who didn't?
 
 #### Sample Student prompt:
-- [Log in](https://timetostudybuddy.azurewebsites.net/) as s1  
+- Log in as s1  
 - Select the BUS 5000 class from the dropdown menu  
 - Select the Introduction module from the dropdown menu  
 - Ask Study Buddy: Can you explain to me the purpose and value of the education and skill set that comes from an MBA? Please give me some exercises I can work on throughout this course based on the textbook to practice the skills I will learn. Make some of the exercises easy and some more difficult.  
